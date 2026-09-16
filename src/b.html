@@ -1,0 +1,328 @@
+<style>
+/* ============================================================
+   MAKES — artifact gallery (light)
+   ============================================================ */
+.light-blobs{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.light-blobs i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+.light-blobs i:nth-child(1){width:46vw;height:46vw;left:-14vw;top:-10vw;background:radial-gradient(circle,#C9C4FF 0%,transparent 65%)}
+.light-blobs i:nth-child(2){width:40vw;height:40vw;right:-12vw;top:6vw;background:radial-gradient(circle,#FFD3DE 0%,transparent 65%)}
+.light-blobs i:nth-child(3){width:32vw;height:32vw;left:22vw;bottom:-16vw;background:radial-gradient(circle,#C2F5EE 0%,transparent 65%)}
+
+.gallery-outer{position:relative}
+.gallery{
+  display:flex;gap:26px;overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;padding:12px 4px 34px;
+  scrollbar-width:none;cursor:grab;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent 100%);
+}
+.gallery::-webkit-scrollbar{display:none}
+.gallery.dragging{cursor:grabbing;scroll-snap-type:none}
+.gallery.dragging .shot{pointer-events:none}
+.shot{
+  flex:0 0 min(640px,82vw);scroll-snap-align:center;position:relative;
+  padding:14px;border-radius:30px;
+}
+.shot .win{display:flex;gap:6px;padding:2px 4px 12px}
+.shot .win i{width:10px;height:10px;border-radius:99px;background:rgba(22,23,43,.14)}
+.shot .win i:nth-child(1){background:#FF6B8A}.shot .win i:nth-child(2){background:#FFB43A}.shot .win i:nth-child(3){background:#44E08C}
+.shot img{border-radius:18px;box-shadow:0 24px 50px -30px rgba(22,23,43,.45);border:1px solid rgba(22,23,43,.07);-webkit-user-drag:none;user-select:none}
+.shot-meta{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 6px 4px}
+.shot-meta h3{font-size:18px;letter-spacing:-.02em}
+.shot-meta p{font-size:14px;color:var(--ink-d-dim);margin-top:2px}
+.level-chip{
+  flex:0 0 auto;padding:5px 12px;border-radius:999px;font-size:12.5px;font-weight:700;letter-spacing:.02em;
+  color:#fff;background:var(--lc,var(--c-indigo));
+  box-shadow:0 6px 16px -8px var(--lc,var(--c-indigo));
+}
+.shot-link{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--ink-d-dim);margin-top:6px}
+.shot-link:hover{color:var(--ink-d)}
+.shot-link svg{width:13px;height:13px}
+.gallery-nav{display:flex;gap:10px;justify-content:center;margin-top:-6px}
+.g-btn{
+  width:46px;height:46px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.8);border:1px solid rgba(22,23,43,.1);color:var(--ink-d);
+  transition:transform .3s var(--ease),background .3s,opacity .3s;
+  box-shadow:0 10px 26px -16px rgba(22,23,43,.4);
+}
+.g-btn:hover{background:#fff;transform:translateY(-2px)}
+.g-btn svg{width:17px;height:17px}
+.g-btn[disabled]{opacity:.35;pointer-events:none}
+.drag-hint{display:flex;justify-content:center;margin-top:10px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-d-faint);font-weight:600}
+
+/* ============================================================
+   DEMO — the desk simulation (dark)
+   ============================================================ */
+.demo-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:26px;align-items:stretch}
+@media (max-width:960px){.demo-grid{grid-template-columns:1fr}}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;justify-content:center}
+.tab{
+  display:inline-flex;align-items:center;gap:9px;padding:11px 18px;border-radius:999px;
+  font-size:14.5px;font-weight:600;color:var(--ink-dim);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  transition:color .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease),transform .3s var(--ease);
+  min-height:44px;
+}
+.tab:hover{color:var(--ink);transform:translateY(-1px)}
+.tab .swatch{width:9px;height:9px;border-radius:99px;background:var(--tc,#6E5BFF);box-shadow:0 0 10px var(--tc,#6E5BFF)}
+.tab[aria-selected="true"]{
+  color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.24);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 30px -18px var(--tc,#6E5BFF);
+}
+.desk{position:relative;padding:26px;min-height:420px;display:flex;flex-direction:column}
+.desk-head{display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--hairline-d);margin-bottom:18px}
+.desk-head .win{display:flex;gap:6px}
+.desk-head .win i{width:10px;height:10px;border-radius:99px;background:rgba(255,255,255,.18)}
+.desk-head .win i:nth-child(1){background:var(--c-coral)}.desk-head .win i:nth-child(2){background:var(--c-amber)}.desk-head .win i:nth-child(3){background:var(--c-mint)}
+.desk-head b{font-size:13.5px;font-weight:600;color:var(--ink-dim);letter-spacing:.01em}
+.desk-head .agent-dot{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-faint)}
+.desk-head .agent-dot::before{content:"";width:7px;height:7px;border-radius:99px;background:var(--c-mint);box-shadow:0 0 10px var(--c-mint)}
+.chat{display:flex;flex-direction:column;gap:14px;flex:1}
+.msg{max-width:92%;padding:13px 17px;border-radius:18px;font-size:15px;line-height:1.45;opacity:0;transform:translateY(12px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.msg.show{opacity:1;transform:none}
+.msg.user{align-self:flex-end;background:linear-gradient(135deg,rgba(110,91,255,.35),rgba(183,92,255,.28));border:1px solid rgba(255,255,255,.16);border-bottom-right-radius:6px;color:#fff}
+.msg.agent{align-self:flex-start;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:6px;color:var(--ink-dim)}
+.msg.agent b{color:var(--ink)}
+.steps{display:flex;flex-direction:column;gap:9px;align-self:flex-start;width:100%;max-width:92%;opacity:0;transition:opacity .5s var(--ease)}
+.steps.show{opacity:1}
+.step{display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:14px;color:var(--ink-dim)}
+.step .tick{width:20px;height:20px;border-radius:99px;flex:0 0 20px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.step .tick svg{width:11px;height:11px}
+.step.done .tick{background:var(--tc,#6E5BFF);border-color:transparent}
+.step .spin{width:11px;height:11px;border-radius:99px;border:2px solid rgba(255,255,255,.18);border-top-color:#fff;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.artifact{position:relative;padding:26px;display:flex;flex-direction:column}
+.artifact-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.artifact-head h3{font-size:16.5px;letter-spacing:-.015em}
+.artifact-badge{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--tc,#6E5BFF)}
+.artifact-body{position:relative;flex:1;display:flex;flex-direction:column;gap:14px}
+.artifact-img{
+  position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.12);
+  aspect-ratio:16/10.6;background:rgba(255,255,255,.03);
+}
+.artifact-img img{width:100%;height:100%;object-fit:cover;object-position:top}
+.artifact-img .skel{position:absolute;inset:0;background:linear-gradient(100deg,rgba(255,255,255,.04) 40%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.04) 60%);background-size:200% 100%;animation:skel 1.6s linear infinite}
+@keyframes skel{to{background-position:-200% 0}}
+.artifact-img img{opacity:0;transition:opacity .7s var(--ease)}
+.artifact-img.loaded img{opacity:1}
+.artifact-img.loaded .skel{opacity:0;transition:opacity .5s}
+.artifact-foot{margin-top:16px;display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-faint)}
+.artifact-foot .spark{width:16px;height:16px;color:var(--tc,#6E5BFF);flex:0 0 16px}
+.artifact-note{display:none;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:20px 22px}
+.artifact-note.on{display:block}
+.note-head{display:flex;align-items:center;gap:10px;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.1)}
+.note-ava{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--pc,#2BD9C7),color-mix(in srgb,var(--pc,#2BD9C7) 55%,#111))}
+.note-head b{font-size:15px}
+.note-head .note-sub{font-size:12.5px;color:var(--ink-faint)}
+.note-rows{display:flex;flex-direction:column;gap:10px}
+.note-row{display:flex;gap:12px;font-size:14.5px;line-height:1.5;color:var(--ink-dim)}
+.note-row .k{flex:0 0 92px;font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);padding-top:2px}
+.note-row .v{flex:1}
+.note-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.note-chips span{padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:600;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--ink-dim)}
+
+/* ============================================================
+   PIPELINES (light)
+   ============================================================ */
+.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media (max-width:1080px){.p-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:680px){.p-grid{grid-template-columns:1fr}}
+.p-card{position:relative;padding:30px 28px 26px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.p-card::before{content:"";position:absolute;top:0;left:28px;right:28px;height:3px;border-radius:0 0 99px 99px;background:var(--pc,#6E5BFF);opacity:.85;z-index:3}
+.p-card:hover{transform:translateY(-6px)}
+.p-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.p-ico{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--pc,#6E5BFF) 14%,#fff);color:var(--pc,#6E5BFF);box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.p-ico svg{width:21px;height:21px}
+.p-num{font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--ink-d-faint)}
+.p-card h3{font-size:20px;letter-spacing:-.02em}
+.p-io{font-size:13px;line-height:1.5;color:var(--ink-d-dim);background:rgba(22,23,43,.045);border:1px solid rgba(22,23,43,.07);border-radius:12px;padding:11px 14px}
+.p-io b{color:var(--ink-d);font-weight:600}
+.p-io .arrow{color:var(--pc,#6E5BFF);font-weight:700}
+.p-list{display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--ink-d-dim);margin:2px 0 4px}
+.p-list span{display:flex;gap:9px;align-items:flex-start}
+.p-list svg{width:14px;height:14px;flex:0 0 14px;margin-top:3.5px;color:var(--pc,#6E5BFF)}
+.p-link{margin-top:auto;display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--ink-d)}
+.p-link svg{width:14px;height:14px;transition:transform .3s var(--ease)}
+.p-card:hover .p-link svg{transform:translateX(3px)}
+
+/* ============================================================
+   HOW (dark)
+   ============================================================ */
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;position:relative}
+@media (max-width:960px){.how-grid{grid-template-columns:1fr}}
+.how-line{position:absolute;top:64px;left:6%;right:6%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22) 15%,rgba(255,255,255,.22) 85%,transparent);z-index:0}
+@media (max-width:960px){.how-line{display:none}}
+.how-step{padding:32px 30px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+.how-num{
+  width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:19px;color:#fff;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 85%,#fff),var(--pc));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 14px 30px -14px var(--pc);
+}
+.how-step h3{font-size:21px;letter-spacing:-.02em}
+.how-step p{font-size:15.5px;color:var(--ink-dim);line-height:1.55}
+.how-step .mono{font-size:13px;color:var(--ink-faint)}
+.trust{
+  margin-top:26px;padding:24px 30px;display:flex;align-items:center;gap:18px;
+  border-radius:var(--r-md);
+  background:linear-gradient(120deg,rgba(43,217,199,.1),rgba(110,91,255,.1));
+  border:1px solid rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+}
+.trust svg{width:26px;height:26px;flex:0 0 26px;color:var(--c-teal)}
+.trust p{font-size:15.5px;color:var(--ink-dim);line-height:1.55}
+.trust p b{color:var(--ink)}
+@media (max-width:680px){.trust{flex-direction:column;align-items:flex-start;gap:10px}}
+</style>
+
+<!-- ============================ NAV ============================ -->
+<div class="nav-outer" id="navOuter">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="#top" aria-label="Prism home">
+      <svg viewBox="0 0 34 32" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="lgMark" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="rgba(255,255,255,.32)"/><stop offset="1" stop-color="rgba(255,255,255,.07)"/>
+          </linearGradient>
+        </defs>
+        <path d="M0 19h12" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M16.5 6.5 28 27H5Z" fill="url(#lgMark)" stroke="rgba(255,255,255,.92)" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M22.3 16.8 33 12.6" stroke="#6E5BFF" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+        <path d="M24.1 19.6 33 17.4" stroke="#2BD9C7" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+        <path d="M25.9 22.4 32.7 22.2" stroke="#FF6B8A" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+      </svg>
+      Prism
+    </a>
+    <div class="nav-links">
+      <a href="#makes">What it makes</a>
+      <a href="#pipelines">Pipelines</a>
+      <a href="#how">How it works</a>
+      <a href="#install">Install</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a class="nav-github" href="https://github.com/itsfedor/esl-automation-suite" target="_blank" rel="noopener" aria-label="GitHub repository">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+      <a class="btn btn-primary" href="#install">Install the suite</a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#makes">What it makes</a>
+  <a href="#pipelines">Pipelines</a>
+  <a href="#how">How it works</a>
+  <a href="#install">Install</a>
+  <a href="#faq">FAQ</a>
+  <a class="btn btn-primary btn-lg" href="#install">Install the suite</a>
+</div>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero" id="top">
+  <div class="bg-image" style="background-image:url('assets/raw/aurora.jpg');opacity:.42"></div>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="prism-scene">
+    <svg class="prism" id="prismSvg" viewBox="0 0 1200 700" fill="none" role="img" aria-labelledby="prismTitle">
+      <title id="prismTitle">White light entering a glass prism and fanning out into six colored beams — one per pipeline</title>
+      <defs>
+        <linearGradient id="pBeam" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#F2F3F8" stop-opacity="0"/>
+          <stop offset="1" stop-color="#F2F3F8"/>
+        </linearGradient>
+        <linearGradient id="pGlass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fff" stop-opacity=".26"/>
+          <stop offset=".55" stop-color="#fff" stop-opacity=".05"/>
+          <stop offset="1" stop-color="#fff" stop-opacity=".16"/>
+        </linearGradient>
+        <filter id="pBloom" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <ellipse class="p-shadow" cx="530" cy="560" rx="230" ry="30" fill="#000"/>
+      <path class="p-beam" d="M-40 378 H505" pathLength="1" stroke="url(#pBeam)" stroke-width="4" stroke-linecap="round"/>
+      <path class="p-beam-inner" d="M505 378 L601 316" pathLength="1" opacity=".5" stroke="#F2F3F8" stroke-width="2.4"/>
+      <g class="p-rays" fill="none" stroke-width="5" stroke-linecap="round" filter="url(#pBloom)">
+        <path class="p-ray" style="--i:0" pathLength="1" stroke="#6E5BFF" d="M601 316 L1240 140"/>
+        <path class="p-ray" style="--i:1" pathLength="1" stroke="#B75CFF" d="M619 354 L1260 210"/>
+        <path class="p-ray" style="--i:2" pathLength="1" stroke="#FF6B8A" d="M637 391 L1270 280"/>
+        <path class="p-ray" style="--i:3" pathLength="1" stroke="#FFB43A" d="M655 428 L1270 350"/>
+        <path class="p-ray" style="--i:4" pathLength="1" stroke="#2BD9C7" d="M673 465 L1260 420"/>
+        <path class="p-ray" style="--i:5" pathLength="1" stroke="#44E08C" d="M691 502 L1250 490"/>
+      </g>
+      <path class="p-body" d="M520 150 L700 520 L340 520 Z" fill="url(#pGlass)" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-linejoin="round"/>
+      <path class="p-edge" d="M520 150 L700 520" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <div class="wrap hero-inner">
+    <span class="eyebrow r"><span class="dot"></span>Open source · MIT · agent skills</span>
+    <h1 class="r" style="--d:.06s">Hours of prep,<br><span class="grad-text">done in minutes.</span></h1>
+    <p class="sub r" style="--d:.12s">Six open-source pipelines that run inside the AI agent you already use. Feed in a video, a voice note, or an episode script — get back a teacher's guide, ready homework, or a finished lesson in Edvibe.</p>
+    <div class="hero-ctas r" style="--d:.18s">
+      <a class="btn btn-primary btn-lg" href="#install">Install the suite
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </a>
+      <a class="btn btn-ghost btn-lg" href="#makes">See what it makes</a>
+    </div>
+    <div class="hero-chips r" style="--d:.24s">
+      <span class="chip"><span class="swatch" style="background:var(--c-indigo)"></span><b>6</b>&nbsp;pipelines</span>
+      <span class="chip"><span class="swatch" style="background:var(--c-teal)"></span><b>3</b>&nbsp;skills</span>
+      <span class="chip"><span class="swatch" style="background:var(--c-amber)"></span><b>70+</b>&nbsp;agents</span>
+      <span class="chip"><span class="swatch" style="background:var(--c-mint)"></span><b>0</b>&nbsp;servers</span>
+    </div>
+  </div>
+
+  <div class="hero-stage wrap">
+    <div class="stage-deck" id="deck">
+      <div class="stage-glow" aria-hidden="true"></div>
+      <div class="glass deck-card deck-main" data-depth="6" data-spec>
+        <img src="assets/shots/lesson-guide-B2.jpg" alt="Lesson guide artifact: vocabulary, exercises and discussion built from a YouTube video">
+      </div>
+      <div class="glass deck-card deck-a" data-depth="16" data-spec>
+        <img src="assets/shots/teacher-kit-B1.jpg" alt="Small-talk teacher kit artifact at level B1">
+      </div>
+      <div class="glass deck-card deck-b" data-depth="22" data-spec>
+        <img src="assets/shots/c1-exercise.jpg" alt="C1 visual-data writing exercise with charts">
+      </div>
+      <div class="glass deck-card deck-c" data-depth="12" data-spec>
+        <img src="assets/shots/bar-chart-example.jpg" alt="Chart generated for a C1 writing exercise">
+      </div>
+    </div>
+    <div class="scroll-cue r" style="--d:.4s"><span>Scroll
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    </span></div>
+  </div>
+  <div class="hero-fade" aria-hidden="true"></div>
+</section>
+
+<!-- ============================ MARQUEE ============================ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="m-item"><span class="tick"></span>Hermes Agent</div>
+    <div class="m-item"><span class="tick"></span>Claude Code</div>
+    <div class="m-item"><span class="tick"></span>Codex CLI</div>
+    <div class="m-item"><span class="tick"></span>Cursor</div>
+    <div class="m-item"><span class="tick"></span>agentskills.io</div>
+    <div class="m-item"><span class="tick"></span>Edvibe</div>
+    <div class="m-item"><span class="tick"></span>Notion</div>
+    <div class="m-item"><span class="tick"></span>Deepgram</div>
+    <div class="m-item"><span class="tick"></span>SKILL.md format</div>
+    <div class="m-item"><span class="tick"></span>MIT</div>
+    <div class="m-item"><span class="tick"></span>Hermes Agent</div>
+    <div class="m-item"><span class="tick"></span>Claude Code</div>
+    <div class="m-item"><span class="tick"></span>Codex CLI</div>
+    <div class="m-item"><span class="tick"></span>Cursor</div>
+    <div class="m-item"><span class="tick"></span>agentskills.io</div>
+    <div class="m-item"><span class="tick"></span>Edvibe</div>
+    <div class="m-item"><span class="tick"></span>Notion</div>
+    <div class="m-item"><span class="tick"></span>Deepgram</div>
+    <div class="m-item"><span class="tick"></span>SKILL.md format</div>
+    <div class="m-item"><span class="tick"></span>MIT</div>
+  </div>
+</div>

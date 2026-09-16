@@ -1,0 +1,778 @@
+<style>
+/* ============================================================
+   EVENING (light) — before / after
+   ============================================================ */
+.eve-switch{display:flex;gap:6px;justify-content:center;margin:0 auto 34px;padding:6px;border-radius:999px;width:max-content;
+  background:rgba(255,255,255,.75);border:1px solid rgba(22,23,43,.08);box-shadow:0 14px 34px -22px rgba(22,23,43,.45)}
+.eve-btn{padding:11px 24px;border-radius:999px;font-size:15px;font-weight:600;color:var(--ink-d-dim);transition:color .3s var(--ease),background .3s var(--ease),box-shadow .3s var(--ease);min-height:44px}
+.eve-btn:hover{color:var(--ink-d)}
+.eve-btn.on{color:#fff;background:linear-gradient(135deg,var(--c-indigo),var(--c-violet));box-shadow:0 10px 26px -12px rgba(110,91,255,.7)}
+.eve-btn[data-eve="before"].on{background:linear-gradient(135deg,#6B6D80,#4B4D60);box-shadow:0 10px 26px -12px rgba(75,77,96,.6)}
+.eve-panels{max-width:760px;margin:0 auto;position:relative;display:grid}
+.eve-panel{grid-area:1/1;display:none;padding:34px 36px}
+.eve-panel.on{display:block;animation:fadeUp .55s var(--ease) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.eve-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-bottom:18px;margin-bottom:6px;border-bottom:1px solid var(--hairline)}
+.eve-tag{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14px}
+.eve-tag::before{content:"";width:9px;height:9px;border-radius:99px;background:var(--ec,#6E5BFF)}
+.eve-total{font-size:13.5px;font-weight:700;padding:6px 14px;border-radius:999px;background:rgba(22,23,43,.05);color:var(--ink-d-dim)}
+.tl{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column}
+.tl li{display:flex;gap:18px;padding:13px 0;border-bottom:1px dashed rgba(22,23,43,.08);align-items:baseline}
+.tl li:last-child{border-bottom:0}
+.tl .t{flex:0 0 64px;font-weight:700;font-size:14px;letter-spacing:.01em}
+#eve-before .tl .t{color:#8E8FA3}
+#eve-after .tl .t{color:var(--c-indigo)}
+.tl p{font-size:15.5px;color:var(--ink-d-dim);line-height:1.5}
+.eve-punch{text-align:center;margin-top:30px;font-size:17px;font-weight:600;color:var(--ink-d-dim)}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+.stats-band{padding:96px 0;border-top:1px solid var(--hairline-d)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+@media (max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.stats-grid{grid-template-columns:1fr}}
+.stat{display:flex;flex-direction:column;gap:6px;text-align:left}
+.stat b{font-size:clamp(40px,4.6vw,60px);font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;
+  background:var(--spectrum);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradShift 12s ease-in-out infinite alternate}
+.stat span{font-size:14.5px;color:var(--ink-dim)}
+
+/* ============================================================
+   INSTALL
+   ============================================================ */
+.install-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;align-items:start}
+@media (max-width:960px){.install-grid{grid-template-columns:1fr}}
+.term{overflow:hidden;border-radius:var(--r-md)}
+.term-head{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--hairline-d)}
+.term-head .win{display:flex;gap:6px}
+.term-head .win i{width:10px;height:10px;border-radius:99px}
+.term-head .win i:nth-child(1){background:#FF6B8A}.term-head .win i:nth-child(2){background:#FFB43A}.term-head .win i:nth-child(3){background:#44E08C}
+.term-head b{font-size:13px;font-weight:600;color:var(--ink-faint)}
+.term-body{padding:24px}
+.cmd{display:flex;align-items:center;gap:12px;font-size:14.5px;padding:18px;border-radius:14px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);overflow-x:auto;white-space:nowrap}
+.cmd .prompt{color:var(--c-teal);font-weight:700;flex:0 0 auto}
+.cmd .code{color:#E8E9F5}
+.caret{width:8px;height:19px;background:#fff;opacity:.75;animation:caret 1.06s steps(1) infinite;flex:0 0 8px;border-radius:2px}
+@keyframes caret{0%,49%{opacity:.75}50%,100%{opacity:0}}
+.term-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn.ok{background:linear-gradient(135deg,var(--c-mint),var(--c-teal));color:#032420}
+.insteps{display:flex;flex-direction:column;gap:14px}
+.instep{display:flex;gap:16px;padding:20px 22px;align-items:flex-start}
+.instep .n{width:30px;height:30px;flex:0 0 30px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--c-indigo),var(--c-violet));box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.instep h4{font-size:16px;letter-spacing:-.01em;margin-bottom:3px}
+.instep p{font-size:14.5px;color:var(--ink-dim);line-height:1.5}
+.agent-block{margin-top:24px;padding:26px 28px;display:flex;align-items:center;gap:20px;justify-content:space-between;flex-wrap:wrap}
+.agent-block .q{font-size:15px;color:var(--ink-dim);line-height:1.6;max-width:660px}
+.agent-block .q b{color:var(--ink)}
+.agent-block .mono{font-size:14px;color:#CFCBFF;display:block;margin-top:8px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.09);padding:12px 16px;border-radius:12px;overflow-x:auto;white-space:nowrap;max-width:100%}
+.agent-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;justify-content:center;font-size:14.5px;color:var(--ink-faint);font-weight:600}
+.agent-row i{font-style:normal;display:inline-flex;align-items:center;gap:8px}
+.agent-row i::before{content:"";width:6px;height:6px;border-radius:99px;background:var(--c-mint);opacity:.9}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+.faq-list{max-width:840px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+details.faq{
+  border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(22,23,43,.08);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  transition:background .3s var(--ease),box-shadow .3s var(--ease);
+}
+details.faq:hover{background:#fff;box-shadow:0 18px 44px -30px rgba(22,23,43,.4)}
+details.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:16px;padding:21px 26px;font-weight:600;font-size:16.5px;letter-spacing:-.012em}
+details.faq summary::-webkit-details-marker{display:none}
+.faq .plus{margin-left:auto;width:28px;height:28px;flex:0 0 28px;border-radius:99px;background:rgba(22,23,43,.06);display:flex;align-items:center;justify-content:center;transition:transform .4s var(--ease),background .3s}
+details.faq[open] .plus{transform:rotate(45deg);background:rgba(110,91,255,.12)}
+.faq .plus svg{width:14px;height:14px;color:var(--ink-d)}
+.faq .a{padding:0 26px 24px;color:var(--ink-d-dim);font-size:15.5px;line-height:1.65;max-width:70ch}
+
+/* ============================================================
+   CTA + FOOTER
+   ============================================================ */
+.cta{padding:150px 0 140px;overflow:clip;text-align:center}
+.cta .bg-image{opacity:.3}
+.cta-inner{display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;z-index:2}
+.cta .h2{font-size:clamp(40px,6vw,76px)}
+.spectrum-line{height:2px;background:var(--spectrum);opacity:.55}
+.footer{padding:76px 0 44px}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:32px}
+@media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.footer-grid{grid-template-columns:1fr}}
+.footer h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 16px;font-weight:700}
+.footer .f-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;color:#fff;margin-bottom:14px}
+.footer .f-logo svg{width:26px;height:26px}
+.footer .f-about{font-size:14.5px;color:var(--ink-dim);line-height:1.6;max-width:36ch}
+.footer-col a{display:block;padding:5.5px 0;font-size:14.5px;color:var(--ink-dim);transition:color .25s}
+.footer-col a:hover{color:#fff}
+.footer-base{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:60px;padding-top:26px;border-top:1px solid var(--hairline-d);font-size:13px;color:var(--ink-faint)}
+.footer-base span{max-width:60ch}
+
+@media (max-width:680px){
+  .section{padding:90px 0}
+  .hero{padding:158px 0 64px}
+  .hero-chips{display:none}
+  .deck-a{left:-6%;bottom:-12%}
+  .deck-b{right:-6%;top:-14%}
+  .shot{flex-basis:86vw}
+  .eve-panel{padding:26px 22px}
+  .tl .t{flex-basis:54px;font-size:13px}
+  .cmd{font-size:12.5px;padding:14px}
+}
+
+/* ---------- intrinsic-size hardening (nowrap scroll boxes must not blow up grid/flex tracks) ---------- */
+html{overflow-x:clip}
+.install-grid>*,.demo-grid>*,.p-grid>*,.how-grid>*,.stats-grid>*,.footer-grid>*,.eve-panels>*{min-width:0}
+.agent-block>*{min-width:0}
+.agent-block .mono{max-width:100%;min-width:0}
+.desk,.term,.cmd,.artifact{min-width:0}
+.msg{overflow-wrap:anywhere}
+.eve-switch{max-width:100%}
+.insteps{min-width:0}
+@media (max-width:680px){
+  .agent-block .mono{font-size:12.5px}
+  .cmd{font-size:12px}
+}
+</style>
+
+<!-- ============================ EVENING ============================ -->
+<section class="section light" id="evening">
+  <div class="light-blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <div class="section-head center r">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-mint);box-shadow:0 0 12px var(--c-mint)"></span>The difference</span>
+      <h2 class="h2">A Tuesday evening, both ways.</h2>
+      <p class="sub">Same teacher, same students, same B2 video — prepared twice. Times are illustrative.</p>
+    </div>
+
+    <div class="eve-switch r" role="group" aria-label="Compare the two evenings">
+      <button class="eve-btn on" data-eve="before" aria-pressed="true">Before Prism</button>
+      <button class="eve-btn" data-eve="after" aria-pressed="false">With Prism</button>
+    </div>
+
+    <div class="eve-panels r">
+      <div class="eve-panel glass-l on" id="eve-before">
+        <div class="eve-head">
+          <span class="eve-tag" style="--ec:#8E8FA3">Manual prep</span>
+          <span class="eve-total mono">≈ 1 h 45 m</span>
+        </div>
+        <ul class="tl">
+          <li><span class="t mono">19:20</span><p>Open the video. Watch it with a notepad, then rewind the parts worth quoting.</p></li>
+          <li><span class="t mono">19:45</span><p>Pull the vocabulary by hand and second-guess the level.</p></li>
+          <li><span class="t mono">20:10</span><p>Write four exercises, then add two more so the homework isn't thin.</p></li>
+          <li><span class="t mono">20:40</span><p>Format all of it so it pastes into Edvibe without breaking.</p></li>
+          <li><span class="t mono">21:05</span><p>Notice the answer key is still sitting in the student copy. Fix it.</p></li>
+        </ul>
+      </div>
+      <div class="eve-panel glass-l" id="eve-after">
+        <div class="eve-head">
+          <span class="eve-tag" style="--ec:var(--c-indigo)">With Prism</span>
+          <span class="eve-total mono">≈ 10 m</span>
+        </div>
+        <ul class="tl">
+          <li><span class="t mono">19:20</span><p>Paste the video link and the level: “B2 guide, four plus two, under 15 minutes.”</p></li>
+          <li><span class="t mono">19:23</span><p>Read the guide. Drop one exercise that is off for this group.</p></li>
+          <li><span class="t mono">19:27</span><p>Paste it into Edvibe and check the answer key is separate.</p></li>
+          <li><span class="t mono">19:30</span><p>Done. Ten minutes, start to finish.</p></li>
+        </ul>
+      </div>
+    </div>
+    <p class="eve-punch r">105 minutes became 10 — and the guide at the end is the guide you would have written.</p>
+  </div>
+</section>
+
+<!-- ============================ STATS + INSTALL ============================ -->
+<section class="dark" id="install">
+  <div class="wrap stats-band">
+    <div class="stats-grid">
+      <div class="stat r"><b data-count="6">6</b><span>Pipelines in the suite</span></div>
+      <div class="stat r" style="--d:.07s"><b data-count="3">3</b><span>Skills, installed in one command</span></div>
+      <div class="stat r" style="--d:.14s"><b data-count="70" data-suffix="+">70+</b><span>AI agents the skills install into</span></div>
+      <div class="stat r" style="--d:.21s"><b data-count="0">0</b><span>Servers between you and your students</span></div>
+    </div>
+  </div>
+
+  <div class="section" style="border-top:1px solid var(--hairline-d)">
+    <div class="wrap">
+      <div class="section-head center r">
+        <span class="eyebrow"><span class="dot" style="background:var(--c-teal);box-shadow:0 0 12px var(--c-teal)"></span>Install</span>
+        <h2 class="h2">Two prerequisites.<br>One line.</h2>
+        <p class="sub">Node 18+ and Python 3.9+ on Linux or macOS. Nothing else. No account, no server.</p>
+      </div>
+
+      <div class="install-grid">
+        <div class="term glass r" data-spec>
+          <div class="term-head">
+            <div class="win" aria-hidden="true"><i></i><i></i><i></i></div>
+            <b class="mono">terminal</b>
+          </div>
+          <div class="term-body">
+            <div class="cmd">
+              <span class="prompt mono" aria-hidden="true">$</span>
+              <span class="code mono" id="typeCmd"></span>
+              <span class="caret" aria-hidden="true"></span>
+            </div>
+            <div class="term-actions">
+              <button class="btn btn-primary" data-copy="npx skills add itsfedor/esl-automation-suite -g -y">
+                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                <span class="lbl">Copy command</span>
+              </button>
+              <a class="btn btn-ghost" href="https://github.com/itsfedor/esl-automation-suite" target="_blank" rel="noopener">View on GitHub</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="insteps">
+          <div class="instep glass r" style="--d:.06s" data-spec>
+            <div class="n">1</div>
+            <div><h4>Check your versions</h4><p>Node 18+ and Python 3.9+. Run <span class="mono">node -v</span> and you are half done.</p></div>
+          </div>
+          <div class="instep glass r" style="--d:.12s" data-spec>
+            <div class="n">2</div>
+            <div><h4>Run the one-liner</h4><p>Installs all three skills into every agent it detects. Add <span class="mono">-a hermes-agent</span>, <span class="mono">-a claude-code</span> or <span class="mono">-a codex</span> to target one.</p></div>
+          </div>
+          <div class="instep glass r" style="--d:.18s" data-spec>
+            <div class="n">3</div>
+            <div><h4>Connect Edvibe</h4><p>Ask your agent to “connect Edvibe”. It installs the local CLI, walks you through a one-time login, then lessons build straight from chat.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-block glass r" data-spec>
+        <div class="q">
+          <b>In a hurry? Paste this into your agent.</b> It reads the install guide, sets everything up, and tells you when it is ready.
+          <span class="mono">Install the skills from https://github.com/itsfedor/esl-automation-suite — read and follow INSTALL.md.</span>
+        </div>
+        <button class="btn btn-primary" data-copy="Install the skills from https://github.com/itsfedor/esl-automation-suite — read and follow INSTALL.md.">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <span class="lbl">Copy prompt</span>
+        </button>
+      </div>
+
+      <div class="agent-row r">
+        <i>Hermes Agent</i><i>Claude Code</i><i>Codex CLI</i><i>Cursor</i><i>agentskills.io · 70+ more</i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FAQ ============================ -->
+<section class="section light" id="faq">
+  <div class="light-blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <div class="section-head center r">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-violet);box-shadow:0 0 12px var(--c-violet)"></span>Questions</span>
+      <h2 class="h2">Fair questions,<br>straight answers.</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq r" open>
+        <summary>What does it cost, and what do I need to run it?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">Nothing, and not much. The suite is MIT licensed with no paid tier. You need Node 18+ and Python 3.9+ on Linux or macOS, plus an AI agent that reads SKILL.md files.</div>
+      </details>
+      <details class="faq r">
+        <summary>Is my Edvibe password safe?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">You type it yourself, once, in your own terminal, and it is never stored. The session token stays in a file on your machine, and the CLI talks to Edvibe from your computer — not through anyone's server.</div>
+      </details>
+      <details class="faq r">
+        <summary>Will it break when Edvibe changes?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">It can. The CLI talks to an undocumented API surface, so an Edvibe update may break it. The skill documents the recovery steps, and the code is open, so fixes land in the repo.</div>
+      </details>
+      <details class="faq r">
+        <summary>Do I need prompt engineering skills?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">No. You describe the lesson in plain words, like “Present Perfect for a 7th grader,” and the skill carries the structure. Read the output the way you would read any draft.</div>
+      </details>
+      <details class="faq r">
+        <summary>Which agent do I need?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">Any agent that reads agentskills.io SKILL.md files: Hermes Agent, Claude Code, Codex CLI, Cursor, and 70+ more. The default install targets every detected agent; add a flag to pick one.</div>
+      </details>
+      <details class="faq r">
+        <summary>Can I use it with students at any level?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">From A1 through C1. Exercises are written for one student from their level, interests and weak spots, and the level never goes up without you asking.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CTA ============================ -->
+<section class="cta dark" id="cta">
+  <div class="bg-image" style="background-image:url('assets/raw/tiles.jpg');opacity:.34"></div>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="wrap cta-inner r">
+    <span class="eyebrow"><span class="dot"></span>Free · Open source · MIT</span>
+    <h2 class="h2">Install the suite.<br><span class="grad-text">Build tonight's lesson.</span></h2>
+    <p class="sub" style="margin:0 auto">Two commands and one login. MIT licensed, and it runs on your machine.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary btn-lg" href="#install">Install the suite</a>
+      <a class="btn btn-ghost btn-lg" href="https://github.com/itsfedor/esl-automation-suite" target="_blank" rel="noopener">
+        <svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        Open the repo on GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="spectrum-line" aria-hidden="true"></div>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer dark">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="f-logo">
+          <svg viewBox="0 0 34 32" fill="none" aria-hidden="true">
+            <path d="M0 19h12" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M16.5 6.5 28 27H5Z" fill="url(#lgMark)" stroke="rgba(255,255,255,.92)" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M22.3 16.8 33 12.6" stroke="#6E5BFF" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+            <path d="M24.1 19.6 33 17.4" stroke="#2BD9C7" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+            <path d="M25.9 22.4 32.7 22.2" stroke="#FF6B8A" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+          </svg>
+          Prism
+        </div>
+        <p class="f-about">AI teaching pipelines for language teachers. Raw material in, ready lessons out. MIT licensed: use it, fork it, teach with it. No paid tier, no tracking.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#makes">What it makes</a>
+        <a href="#demo">Demo</a>
+        <a href="#pipelines">Pipelines</a>
+        <a href="#how">How it works</a>
+        <a href="#install">Install</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="https://github.com/itsfedor/esl-automation-suite/tree/main/docs" target="_blank" rel="noopener">Docs</a>
+        <a href="https://github.com/itsfedor/esl-automation-suite/tree/main/examples" target="_blank" rel="noopener">Examples</a>
+        <a href="https://github.com/itsfedor/esl-automation-suite/blob/main/INSTALL.md" target="_blank" rel="noopener">INSTALL.md</a>
+        <a href="https://agentskills.io" target="_blank" rel="noopener">agentskills.io</a>
+      </div>
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="https://github.com/itsfedor/esl-automation-suite" target="_blank" rel="noopener">GitHub repository</a>
+        <a href="https://github.com/itsfedor/esl-automation-suite/blob/main/LICENSE" target="_blank" rel="noopener">MIT license</a>
+        <a href="https://github.com/itsfedor" target="_blank" rel="noopener">Built by @itsfedor</a>
+      </div>
+    </div>
+    <div class="footer-base">
+      <span>© 2026 Prism · MIT licensed · Made for teachers who teach all day.</span>
+      <span>An independent open-source project. Not affiliated with Edvibe, test-english.com, Notion, or Deepgram — it works with those services and does not speak for them.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canHover = window.matchMedia('(hover: hover)').matches;
+  var $ = function(s, el){ return (el||document).querySelector(s); };
+  var $$ = function(s, el){ return Array.prototype.slice.call((el||document).querySelectorAll(s)); };
+
+  /* ---------- nav ---------- */
+  var navOuter = $('#navOuter');
+  window.addEventListener('scroll', function(){
+    navOuter.classList.toggle('scrolled', window.scrollY > 24);
+  }, { passive: true });
+
+  var burger = $('#burger'), menu = $('#mobileMenu');
+  if (burger && menu){
+    burger.addEventListener('click', function(){
+      var open = menu.classList.toggle('open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    $$('a', menu).forEach(function(a){
+      a.addEventListener('click', function(){
+        menu.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      });
+    });
+  }
+
+  /* ---------- prism lights up ---------- */
+  var prism = $('#prismSvg');
+  if (prism){
+    if (reduced) prism.classList.add('is-lit');
+    else setTimeout(function(){ prism.classList.add('is-lit'); }, 220);
+  }
+
+  /* ---------- reveal ---------- */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, { threshold: .12, rootMargin: '0px 0px -7% 0px' });
+  $$('.r').forEach(function(el){ io.observe(el); });
+
+  /* ---------- specular highlight ---------- */
+  if (canHover && !reduced){
+    $$('[data-spec]').forEach(function(card){
+      var px = 0, py = 0, raf = null;
+      card.addEventListener('pointermove', function(e){
+        var r = card.getBoundingClientRect();
+        px = e.clientX - r.left; py = e.clientY - r.top;
+        if (!raf) raf = requestAnimationFrame(function(){
+          raf = null;
+          card.style.setProperty('--mx', px + 'px');
+          card.style.setProperty('--my', py + 'px');
+        });
+      }, { passive: true });
+    });
+  }
+
+  /* ---------- hero deck parallax ---------- */
+  var hero = $('#top'), deck = $('#deck');
+  if (hero && deck && canHover && !reduced){
+    var cards = $$('.deck-card', deck), tx = 0, ty = 0, pRaf = null;
+    hero.addEventListener('pointermove', function(e){
+      var r = hero.getBoundingClientRect();
+      tx = (e.clientX - r.left) / r.width - .5;
+      ty = (e.clientY - r.top) / r.height - .5;
+      if (!pRaf) pRaf = requestAnimationFrame(function(){
+        pRaf = null;
+        cards.forEach(function(c){
+          var d = parseFloat(c.dataset.depth || 0);
+          c.style.transform = 'translate3d(' + (-tx*d).toFixed(1) + 'px,' + (-ty*d).toFixed(1) + 'px,0)';
+        });
+      });
+    }, { passive: true });
+  }
+
+  /* ---------- gallery ---------- */
+  var gal = $('#gallery');
+  if (gal){
+    var gPrev = $('#gPrev'), gNext = $('#gNext');
+    var step = function(){ var s = $('.shot', gal); return s ? s.getBoundingClientRect().width + 26 : 640; };
+    var updateG = function(){
+      if (!gPrev || !gNext) return;
+      gPrev.disabled = gal.scrollLeft < 8;
+      gNext.disabled = gal.scrollLeft > gal.scrollWidth - gal.clientWidth - 8;
+    };
+    gal.addEventListener('scroll', function(){ requestAnimationFrame(updateG); }, { passive: true });
+    window.addEventListener('resize', updateG);
+    if (gPrev) gPrev.addEventListener('click', function(){ gal.scrollBy({ left: -step(), behavior: reduced ? 'auto' : 'smooth' }); });
+    if (gNext) gNext.addEventListener('click', function(){ gal.scrollBy({ left: step(), behavior: reduced ? 'auto' : 'smooth' }); });
+
+    var down = false, startX = 0, startSL = 0, moved = false;
+    gal.addEventListener('pointerdown', function(e){
+      if (e.pointerType !== 'mouse') return;   /* touch keeps native inertia */
+      down = true; moved = false; startX = e.clientX; startSL = gal.scrollLeft;
+      gal.classList.add('dragging');
+      try { gal.setPointerCapture(e.pointerId); } catch(err){}
+    });
+    gal.addEventListener('pointermove', function(e){
+      if (!down) return;
+      var dx = e.clientX - startX;
+      if (Math.abs(dx) > 5) moved = true;
+      gal.scrollLeft = startSL - dx;
+    }, { passive: true });
+    ['pointerup','pointercancel'].forEach(function(ev){
+      gal.addEventListener(ev, function(e){
+        if (!down) return;
+        down = false; gal.classList.remove('dragging'); updateG();
+        try { gal.releasePointerCapture(e.pointerId); } catch(err){}
+      });
+    });
+    gal.addEventListener('click', function(e){
+      if (moved){ e.preventDefault(); e.stopPropagation(); moved = false; }
+    }, true);
+    updateG();
+  }
+
+  /* ---------- demo ---------- */
+  var DEMO = {
+    video: {
+      title: 'lesson-guide.pipeline', tc: 'var(--c-indigo)', badge: 'Lesson guide',
+      artTitle: 'Teacher\u2019s guide \u2014 B2',
+      user: 'Make a B2 lesson guide from this 3-minute video: \u201CThe Dangers of Copying Successful People.\u201D',
+      steps: ['Fetching the transcript', 'Tagging vocabulary above B2', 'Writing 4 exercises + 2 bonus', 'Checking every quote against the source'],
+      done: '\u003Cb\u003EGuide ready.\u003C/b\u003E The student copy ships without teacher notes; the keys stay in yours.',
+      art: { type: 'img', src: 'assets/shots/lesson-guide-B2.jpg' },
+      foot: 'Formatted for Edvibe, print-ready for class.'
+    },
+    voice: {
+      title: 'student-voice-log.pipeline', tc: 'var(--c-teal)', badge: 'Tracker entry',
+      artTitle: 'Students tracker entry',
+      user: 'Voice note \u00b7 \u201CMaria handled the chart description today. Still mixes up rise and raise. Strong vocabulary. Wants IELTS Task 1 practice next week.\u201D',
+      steps: ['Transcribing the voice note', 'Matching \u201CMaria\u201D in the tracker', 'Splitting into: student, date, topic, next steps', 'Filing under Maria K.'],
+      done: '\u003Cb\u003EEntry added.\u003C/b\u003E Filed five minutes after the lesson, instead of never.',
+      art: { type: 'note', ava: 'MK', name: 'Maria K.', sub: 'Students tracker \u00b7 Notion',
+        rows: [['Wins','Handled the chart description task start to finish.'],['Watch','Mixes up rise and raise.'],['Next','IELTS Task 1 practice next week.'],['Filed','Voice note \u00b7 dated today \u00b7 B1+']],
+        chips: ['entry created','tracker updated','no manual typing'] },
+      foot: 'Queryable by student and date when you plan the next class.'
+    },
+    tv: {
+      title: 'tv-episode-homework.pipeline', tc: 'var(--c-coral)', badge: 'Homework set',
+      artTitle: 'Homework \u2014 one episode',
+      user: 'Homework from episode 3 of Ted Lasso, for Thursday\u2019s class.',
+      steps: ['Sourcing the episode script', 'Capping language at B1', 'Building recap + 4+2 from real lines', 'Budgeting the work at under 15 minutes'],
+      done: '\u003Cb\u003EHomework set.\u003C/b\u003E Or ask for the series version: one Edvibe unit per episode.',
+      art: { type: 'note', ava: 'TL', name: 'Ted Lasso \u00b7 Episode 3', sub: 'Homework \u00b7 Edvibe \u00b7 B1',
+        rows: [['Recap','Three lines the students will recognize instantly.'],['Exercises','4 core + 2 bonus, built from the script.'],['Time','Adds up to 15 minutes of student work.'],['Series','Or one Edvibe unit per episode, in order.']],
+        chips: ['real lines','audio included','ready in Edvibe'] },
+      foot: 'One episode becomes one homework \u2014 or one unit of a course.'
+    },
+    te: {
+      title: 'test-english-adapt.pipeline', tc: 'var(--c-amber)', badge: 'Adapted exercise',
+      artTitle: 'Writing exercise \u2014 C1',
+      user: 'Adapt this for Alex (C1) \u2014 test-english.com, \u201CDescribing visual data\u201D writing task.',
+      steps: ['Opening the source exercise', 'Keeping the exercise type the same', 'Re-writing for one student at C1', 'Generating charts for the task'],
+      done: '\u003Cb\u003EExercise ready.\u003C/b\u003E The level never goes up; anything unverified gets flagged.',
+      art: { type: 'img', src: 'assets/shots/c1-exercise.jpg' },
+      foot: 'Delivered as chat text, a single-file HTML, or a Pages link.'
+    }
+  };
+
+  var chat = $('#chat'), deskTitle = $('#deskTitle'), deskStatus = $('#deskStatus');
+  var artTitle = $('#artTitle'), artBadge = $('#artBadge'), artImg = $('#artImg'),
+      artImgEl = $('#artImgEl'), artNote = $('#artNote'), artFoot = $('#artFoot'),
+      artifactEl = document.querySelector('.artifact');
+  var demoToken = 0;
+
+  function msg(kind, text){
+    var d = document.createElement('div');
+    d.className = 'msg ' + kind;
+    if (kind === 'agent') d.innerHTML = text; else d.textContent = text;
+    return d;
+  }
+  function stepsEl(list){
+    var box = document.createElement('div');
+    box.className = 'steps';
+    list.forEach(function(s){
+      var d = document.createElement('div');
+      d.className = 'step';
+      d.innerHTML = '<span class="tick"><span class="spin"></span></span><span>' + s + '</span>';
+      box.appendChild(d);
+    });
+    return box;
+  }
+  function checkIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  }
+  function buildNote(a){
+    var rows = a.rows.map(function(r){
+      return '<div class="note-row"><span class="k">' + r[0] + '</span><span class="v">' + r[1] + '</span></div>';
+    }).join('');
+    var chips = a.chips.map(function(c){ return '<span>' + c + '</span>'; }).join('');
+    return '<div class="note-head"><div class="note-ava">' + a.ava + '</div><div><b>' + a.name + '</b><div class="note-sub">' + a.sub + '</div></div></div>' +
+           '<div class="note-rows">' + rows + '</div><div class="note-chips">' + chips + '</div>';
+  }
+
+  function play(key){
+    var item = DEMO[key]; if (!item || !chat) return;
+    var token = ++demoToken;
+
+    $$('.tab').forEach(function(t){
+      t.setAttribute('aria-selected', t.dataset.demo === key ? 'true' : 'false');
+    });
+    deskTitle.textContent = item.title;
+    artTitle.textContent = item.artTitle;
+    artBadge.textContent = item.badge;
+    artBadge.style.setProperty('--tc', item.tc);
+    if (artifactEl) artifactEl.style.setProperty('--tc', item.tc);
+    artFoot.textContent = item.foot;
+    chat.innerHTML = '';
+    $$('.step', chat).forEach(function(s){ s.classList.add('done'); });
+
+    artImg.classList.remove('loaded');
+    if (item.art.type === 'img'){
+      artNote.classList.remove('on');
+      artImg.style.display = '';
+      artImgEl.src = item.art.src;
+      if (artImgEl.complete) artImg.classList.add('loaded');
+      else artImgEl.onload = function(){ artImg.classList.add('loaded'); };
+    } else {
+      artImg.style.display = 'none';
+      artNote.style.setProperty('--pc', item.tc);
+      artNote.innerHTML = buildNote(item.art);
+      artNote.classList.add('on');
+    }
+
+    function finishArtifact(){
+      if (item.art.type !== 'img') return;
+      if (artImgEl.complete) artImg.classList.add('loaded');
+      else artImgEl.onload = function(){ artImg.classList.add('loaded'); };
+    }
+
+    if (reduced){
+      deskStatus.textContent = 'agent idle';
+      var u0 = msg('user', item.user); u0.classList.add('show'); chat.appendChild(u0);
+      var s0 = stepsEl(item.steps); s0.classList.add('show');
+      $$('.step', s0).forEach(function(st){
+        st.classList.add('done');
+        $('.tick', st).innerHTML = checkIcon();
+      });
+      chat.appendChild(s0);
+      var d0 = msg('agent', item.done); d0.classList.add('show'); chat.appendChild(d0);
+      finishArtifact();
+      return;
+    }
+
+    deskStatus.textContent = 'agent running\u2026';
+    var u = msg('user', item.user);
+    chat.appendChild(u);
+    setTimeout(function(){ if (token === demoToken) u.classList.add('show'); }, 140);
+
+    var st = stepsEl(item.steps);
+    chat.appendChild(st);
+    setTimeout(function(){ if (token === demoToken) st.classList.add('show'); }, 420);
+
+    var stepEls = $$('.step', st);
+    stepEls.forEach(function(s, i){
+      setTimeout(function(){
+        if (token !== demoToken) return;
+        s.classList.add('done');
+        $('.tick', s).innerHTML = checkIcon();
+      }, 950 + i * 720);
+    });
+
+    var endAt = 950 + stepEls.length * 720 + 320;
+    setTimeout(function(){
+      if (token !== demoToken) return;
+      deskStatus.textContent = 'agent idle';
+      var d = msg('agent', item.done);
+      chat.appendChild(d);
+      requestAnimationFrame(function(){ d.classList.add('show'); });
+      finishArtifact();
+    }, endAt);
+  }
+
+  $$('.tab').forEach(function(t){
+    t.addEventListener('click', function(){ play(t.dataset.demo); });
+    t.addEventListener('keydown', function(e){
+      var tabs = $$('.tab'), i = tabs.indexOf(t), next = null;
+      if (e.key === 'ArrowRight') next = tabs[(i+1) % tabs.length];
+      if (e.key === 'ArrowLeft') next = tabs[(i-1+tabs.length) % tabs.length];
+      if (next){ e.preventDefault(); next.focus(); play(next.dataset.demo); }
+    });
+  });
+
+  var demoDone = false;
+  var demoIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting && !demoDone){ demoDone = true; play('video'); demoIO.disconnect(); }
+    });
+  }, { threshold: .3 });
+  var demoTabs = $('#demoTabs');
+  if (demoTabs) demoIO.observe(demoTabs);
+
+  if (artImgEl && artImgEl.complete) artImg.classList.add('loaded');
+
+  /* ---------- count ups ---------- */
+  function countUp(el){
+    var target = parseFloat(el.dataset.count || '0');
+    var suffix = el.dataset.suffix || '';
+    if (reduced){ el.textContent = target + suffix; return; }
+    var t0 = performance.now(), dur = 1400;
+    function step(t){
+      var k = Math.min(1, (t - t0) / dur);
+      var e = 1 - Math.pow(1 - k, 3);
+      el.textContent = Math.round(target * e) + suffix;
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var statIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting){ countUp(en.target); statIO.unobserve(en.target); }
+    });
+  }, { threshold: .6 });
+  $$('[data-count]').forEach(function(el){
+    el.textContent = '0' + (el.dataset.suffix || '');
+    statIO.observe(el);
+  });
+
+  /* ---------- install typing ---------- */
+  var CMD = 'npx skills add itsfedor/esl-automation-suite -g -y';
+  var typeEl = $('#typeCmd');
+  if (typeEl){
+    if (reduced){ typeEl.textContent = CMD; }
+    else {
+      typeEl.textContent = '';
+      var typed = false;
+      var typeIO = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if (en.isIntersecting && !typed){
+            typed = true; typeIO.disconnect();
+            var i = 0;
+            var t = setInterval(function(){
+              i++;
+              typeEl.textContent = CMD.slice(0, i);
+              if (i >= CMD.length) clearInterval(t);
+            }, 24);
+          }
+        });
+      }, { threshold: .5 });
+      typeIO.observe(typeEl.closest('.term') || typeEl);
+    }
+  }
+
+  /* ---------- copy buttons ---------- */
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly','');
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch(e){ ok = false; }
+    ta.remove();
+    return ok;
+  }
+  function copyText(text){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text).then(function(){ return true; }, function(){ return fallbackCopy(text); });
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+  var checkSvg = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  var copySvg = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+  $$('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var label = $('.lbl', btn);
+      copyText(btn.dataset.copy).then(function(ok){
+        btn.classList.add('ok');
+        if (label){
+          var old = label.textContent;
+          label.textContent = ok ? 'Copied' : 'Select and copy';
+          var ico = $('.ico', btn);
+          if (ico) ico.outerHTML = checkSvg;
+          setTimeout(function(){
+            btn.classList.remove('ok');
+            label.textContent = old;
+            var ico2 = $('.ico', btn);
+            if (ico2) ico2.outerHTML = copySvg;
+          }, 1900);
+        }
+      });
+    });
+  });
+
+  /* ---------- evening toggle ---------- */
+  var eveBefore = $('#eve-before'), eveAfter = $('#eve-after');
+  $$('.eve-btn').forEach(function(b){
+    b.addEventListener('click', function(){
+      var after = b.dataset.eve === 'after';
+      $$('.eve-btn').forEach(function(x){
+        x.classList.toggle('on', x === b);
+        x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+      });
+      if (eveBefore) eveBefore.classList.toggle('on', !after);
+      if (eveAfter) eveAfter.classList.toggle('on', after);
+    });
+  });
+
+  /* ---------- faq: one open at a time ---------- */
+  var faqs = $$('details.faq');
+  faqs.forEach(function(d){
+    d.addEventListener('toggle', function(){
+      if (d.open) faqs.forEach(function(o){ if (o !== d) o.open = false; });
+    });
+  });
+})();
+</script>
+</body>
+</html>

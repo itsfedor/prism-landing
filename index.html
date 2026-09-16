@@ -1,0 +1,1722 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prism: ESL teaching pipelines for your AI agent</title>
+<meta name="description" content="Six open-source pipelines for ESL teachers. A video, a voice note, or an episode script goes in; ready lesson material comes out. MIT. It runs on your machine.">
+<meta property="og:title" content="Prism — raw material in, ready lessons out">
+<meta property="og:description" content="Six open-source AI pipelines for ESL teachers. Install in one command.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Prism — raw material in, ready lessons out">
+<meta name="twitter:description" content="Six open-source AI pipelines for ESL teachers. Install in one command.">
+<meta name="twitter:image" content="assets/og.png">
+<meta name="theme-color" content="#05060E">
+<link rel="icon" href="assets/icon-256.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<style>
+/* ============================================================
+   PRISM — design system
+   Apple keynote x liquid glass. Dark hero, light middle, dark close.
+   ============================================================ */
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/inter-400.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url('assets/fonts/inter-500.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url('assets/fonts/inter-600.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url('assets/fonts/inter-700.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:800;font-display:swap;src:url('assets/fonts/inter-800.woff2') format('woff2')}
+
+:root{
+  /* surfaces */
+  --bg:#05060E; --bg-2:#0B0D1C; --bg-3:#10122a;
+  --light:#F4F4F7; --light-2:#ECECF1;
+  /* ink on dark */
+  --ink:#F2F3F8; --ink-dim:rgba(242,243,248,.60); --ink-faint:rgba(242,243,248,.38);
+  /* ink on light */
+  --ink-d:#16172B; --ink-d-dim:rgba(22,23,43,.62); --ink-d-faint:rgba(22,23,43,.42);
+  /* glass (dark) */
+  --glass:rgba(255,255,255,.065); --glass-strong:rgba(255,255,255,.10);
+  --glass-brd:rgba(255,255,255,.14); --glass-brd-hi:rgba(255,255,255,.28);
+  /* glass (light) */
+  --glass-l:rgba(255,255,255,.66); --glass-l-brd:rgba(255,255,255,.9);
+  --hairline:rgba(22,23,43,.08); --hairline-d:rgba(255,255,255,.08);
+  /* spectrum */
+  --c-indigo:#6E5BFF; --c-violet:#B75CFF; --c-coral:#FF6B8A;
+  --c-amber:#FFB43A; --c-teal:#2BD9C7; --c-mint:#44E08C;
+  --spectrum:linear-gradient(90deg,var(--c-indigo),var(--c-violet) 22%,var(--c-coral) 44%,var(--c-amber) 63%,var(--c-teal) 82%,var(--c-mint));
+  /* motion */
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-soft:cubic-bezier(.4,0,.2,1);
+  /* metrics */
+  --wrap:1160px; --nav-h:64px;
+  --r-lg:28px; --r-md:20px; --r-sm:14px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,sans-serif;
+  font-size:17px; line-height:1.55; letter-spacing:-.011em;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+::selection{background:rgba(110,91,255,.45);color:#fff}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.028em;line-height:1.06;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+.mono{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;letter-spacing:0}
+
+/* ---------- scrollbar ---------- */
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:99px;border:2px solid var(--bg)}
+.light ::-webkit-scrollbar-thumb{background:rgba(22,23,43,.22);border-color:var(--light)}
+
+/* ---------- focus ---------- */
+:focus-visible{outline:2px solid #8FA2FF;outline-offset:3px;border-radius:8px}
+
+/* ============================================================
+   GLASS
+   ============================================================ */
+.glass{
+  position:relative;
+  background:var(--glass);
+  border:1px solid var(--glass-brd);
+  border-radius:var(--r-lg);
+  -webkit-backdrop-filter:blur(24px) saturate(170%);
+  backdrop-filter:blur(24px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 0 0 .5px rgba(255,255,255,.06),
+    0 24px 60px -30px rgba(0,0,0,.7);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .5s var(--ease),background .5s var(--ease);
+}
+/* specular edge ring — a 1px gradient stroke painted on the border box */
+.glass::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(142deg,rgba(255,255,255,.55),rgba(255,255,255,0) 34%,rgba(255,255,255,0) 64%,rgba(255,255,255,.2));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;
+}
+.glass::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(280px circle at var(--mx,50%) var(--my,-20%),rgba(255,255,255,.13),transparent 62%);
+  opacity:0;transition:opacity .45s var(--ease-soft);
+}
+.glass:hover::after{opacity:1}
+.glass-l{
+  position:relative;
+  background:var(--glass-l);
+  border:1px solid var(--glass-l-brd);
+  border-radius:var(--r-lg);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);
+  backdrop-filter:blur(22px) saturate(160%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 30px 60px -40px rgba(22,23,43,.35);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .5s var(--ease);
+}
+.glass-l::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;border:1px solid rgba(255,255,255,.75);pointer-events:none;z-index:2;
+}
+.glass-l::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(280px circle at var(--mx,50%) var(--my,-20%),rgba(255,255,255,.55),transparent 62%);
+  opacity:0;transition:opacity .45s var(--ease-soft);
+}
+.glass-l:hover::after{opacity:1}
+/* no backdrop-filter (older browsers): opaque fallback keeps text legible */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .glass{background:rgba(17,19,38,.92)}
+  .glass-l{background:rgba(255,255,255,.94)}
+  .nav{background:rgba(8,9,20,.92)}
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:inline-flex;align-items:center;gap:10px;
+  min-height:48px;padding:0 24px;border-radius:999px;
+  font-weight:600;font-size:16px;letter-spacing:-.01em;white-space:nowrap;
+  transition:transform .3s var(--ease),box-shadow .35s var(--ease),background .35s var(--ease),opacity .3s;
+  -webkit-user-select:none;user-select:none;
+}
+/* hover light sweep — the glass catches a moving source */
+.btn::after{
+  content:"";position:absolute;inset:-60% -20%;z-index:-1;pointer-events:none;
+  transform:translateX(-130%);transition:transform .8s var(--ease);
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.34) 50%,transparent 62%);
+}
+.btn:hover::after{transform:translateX(130%)}
+.btn:active{transform:scale(.97)}
+.btn-primary{
+  color:#fff;
+  background:linear-gradient(135deg,var(--c-indigo) 0%,var(--c-violet) 48%,var(--c-coral) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 0 rgba(0,0,0,.15),0 14px 34px -12px rgba(110,91,255,.65);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 20px 44px -12px rgba(110,91,255,.75)}
+.btn-ghost{
+  color:var(--ink);background:var(--glass);border:1px solid var(--glass-brd);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
+}
+.btn-ghost:hover{background:var(--glass-strong);border-color:var(--glass-brd-hi);transform:translateY(-2px)}
+.light .btn-ghost{color:var(--ink-d);background:rgba(255,255,255,.7);border-color:rgba(22,23,43,.12)}
+.light .btn-ghost:hover{background:#fff;border-color:rgba(22,23,43,.2)}
+.btn .ico{width:17px;height:17px;flex:0 0 auto}
+.btn-lg{min-height:54px;padding:0 30px;font-size:17px}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav-outer{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 20px 0;transition:padding .5s var(--ease)}
+.nav{
+  max-width:1100px;margin:0 auto;height:var(--nav-h);
+  display:flex;align-items:center;gap:8px;padding:0 12px 0 20px;
+  border-radius:999px;
+  background:rgba(10,11,24,.42);
+  border:1px solid rgba(255,255,255,.10);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 14px 40px -20px rgba(0,0,0,.7);
+  transition:height .5s var(--ease),background .5s var(--ease),border-color .5s var(--ease),box-shadow .5s var(--ease),max-width .5s var(--ease);
+}
+.nav-outer.scrolled{padding:8px 20px 0}
+.nav-outer.scrolled .nav{
+  height:54px;background:rgba(8,9,20,.72);border-color:rgba(255,255,255,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 20px 50px -24px rgba(0,0,0,.85);
+}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em;color:#fff}
+.logo svg{width:26px;height:26px;display:block}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:26px}
+.nav-links a{
+  padding:9px 14px;border-radius:999px;font-size:14.5px;font-weight:500;color:var(--ink-dim);
+  transition:color .25s,background .25s;
+}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nav-cta{margin-left:auto;display:flex;align-items:center;gap:8px}
+.nav .btn{min-height:40px;padding:0 18px;font-size:14.5px}
+.nav-github{
+  display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:999px;
+  color:var(--ink-dim);transition:color .25s,background .25s;
+}
+.nav-github:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nav-github svg{width:19px;height:19px}
+.burger{display:none;width:40px;height:40px;border-radius:999px;align-items:center;justify-content:center;color:#fff}
+.burger svg{width:20px;height:20px}
+.mobile-menu{
+  display:none;position:fixed;inset:0;z-index:99;background:rgba(5,6,14,.7);
+  -webkit-backdrop-filter:blur(30px) saturate(160%);backdrop-filter:blur(30px) saturate(160%);
+  padding:96px 28px 28px;flex-direction:column;gap:6px;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{padding:18px 8px;font-size:22px;font-weight:600;color:var(--ink);border-bottom:1px solid var(--hairline-d)}
+.mobile-menu .btn{margin-top:22px;justify-content:center}
+
+@media (max-width:900px){
+  .nav-links{display:none}
+  .burger{display:inline-flex}
+  .nav-cta .btn{display:none}
+}
+
+/* ============================================================
+   SECTION SHELLS
+   ============================================================ */
+section{position:relative}
+.section{padding:130px 0}
+.section-sm{padding:90px 0}
+.dark{background:var(--bg);color:var(--ink)}
+.light{background:var(--light);color:var(--ink-d)}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:8px 16px;border-radius:999px;
+  font-size:13.5px;font-weight:600;letter-spacing:.01em;
+}
+.dark .eyebrow{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:var(--ink-dim);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.light .eyebrow{background:rgba(255,255,255,.8);border:1px solid rgba(22,23,43,.08);color:var(--ink-d-dim)}
+.eyebrow .dot{width:7px;height:7px;border-radius:99px;background:var(--c-teal);box-shadow:0 0 12px var(--c-teal)}
+.h2{font-size:clamp(32px,4.4vw,54px);letter-spacing:-.032em}
+.sub{font-size:clamp(17px,1.6vw,20px);line-height:1.5;max-width:640px}
+.dark .sub{color:var(--ink-dim)}
+.light .sub{color:var(--ink-d-dim)}
+.section-head{display:flex;flex-direction:column;gap:18px;margin-bottom:64px}
+.section-head.center{align-items:center;text-align:center}
+.section-head .sub{margin:0 auto}
+.grad-text{
+  background:var(--spectrum);background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:gradShift 9s ease-in-out infinite alternate;
+}
+@keyframes gradShift{from{background-position:0% 50%}to{background-position:100% 50%}}
+
+/* ---------- aurora ---------- */
+.aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.aurora i{
+  position:absolute;display:block;border-radius:50%;filter:blur(80px);opacity:.5;
+  mix-blend-mode:screen;will-change:transform;
+}
+.aurora i:nth-child(1){width:52vw;height:52vw;left:-12vw;top:-18vw;background:radial-gradient(circle at 40% 40%,#4B3BD8 0%,transparent 65%);animation:drift1 26s ease-in-out infinite alternate}
+.aurora i:nth-child(2){width:44vw;height:44vw;right:-10vw;top:-6vw;background:radial-gradient(circle at 50% 50%,#9B4DCA 0%,transparent 65%);animation:drift2 31s ease-in-out infinite alternate}
+.aurora i:nth-child(3){width:38vw;height:38vw;right:6vw;top:26vw;background:radial-gradient(circle at 50% 50%,#FF6B8A 0%,transparent 62%);opacity:.34;animation:drift3 37s ease-in-out infinite alternate}
+.aurora i:nth-child(4){width:30vw;height:30vw;left:4vw;top:30vw;background:radial-gradient(circle at 50% 50%,#2BD9C7 0%,transparent 62%);opacity:.26;animation:drift2 29s ease-in-out infinite alternate-reverse}
+@keyframes drift1{to{transform:translate3d(6vw,4vw,0) scale(1.12)}}
+@keyframes drift2{to{transform:translate3d(-5vw,5vw,0) scale(1.08)}}
+@keyframes drift3{to{transform:translate3d(-4vw,-6vw,0) scale(1.15)}}
+.noise{
+  position:absolute;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:240px 240px;
+}
+.bg-image{position:absolute;inset:0;background-size:cover;background-position:center;pointer-events:none}
+.scrim{position:absolute;inset:0;pointer-events:none}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{position:relative;padding:198px 0 96px;overflow:clip}
+/* scrim: guarantees headline contrast wherever the aurora drifts */
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(62% 46% at 50% 30%,rgba(5,6,14,.62),rgba(5,6,14,.18) 62%,transparent 80%);
+}
+.hero-inner{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;text-align:center;gap:26px}
+.hero h1{font-size:clamp(46px,7.4vw,96px);letter-spacing:-.038em;line-height:1.01;max-width:15ch}
+.hero .sub{max-width:640px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.hero-chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+  font-size:13px;font-weight:600;color:var(--ink-dim);
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+}
+.chip b{color:var(--ink);font-weight:700}
+.chip .swatch{width:8px;height:8px;border-radius:99px}
+.hero-stage{position:relative;z-index:4;margin-top:78px}
+.stage-deck{position:relative;max-width:1020px;margin:0 auto}
+.deck-card{
+  position:absolute;border-radius:22px;overflow:hidden;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.12);
+  will-change:transform;transition:transform .18s ease-out;
+}
+.deck-main{position:relative;margin:0 auto;width:min(760px,88%);border-radius:var(--r-md)}
+.deck-main img{border-radius:var(--r-md)}
+.deck-a{width:min(300px,32%);left:-2%;bottom:-8%;z-index:4}
+.deck-b{width:min(280px,30%);right:-1%;top:-10%;z-index:4}
+.deck-c{display:none}
+@media (min-width:1100px){.deck-c{display:block;width:min(230px,24%);right:4%;bottom:-14%;z-index:5}}
+.stage-glow{position:absolute;left:50%;top:52%;width:130%;height:120%;transform:translate(-50%,-50%);pointer-events:none;z-index:0;
+  background:radial-gradient(46% 42% at 50% 50%,rgba(110,91,255,.30),transparent 70%);filter:blur(30px)}
+.hero-fade{position:absolute;left:0;right:0;bottom:0;height:180px;background:linear-gradient(180deg,transparent,var(--bg));pointer-events:none;z-index:6}
+.scroll-cue{position:relative;z-index:7;display:flex;justify-content:center;margin-top:54px}
+.scroll-cue span{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+.scroll-cue svg{width:16px;height:16px;animation:cue 2.2s var(--ease-soft) infinite}
+@keyframes cue{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(5px);opacity:1}}
+
+/* ---------- prism scene (beam enters, six rays out — one per pipeline) ---------- */
+.prism-scene{position:absolute;inset:0;z-index:1;pointer-events:none}
+.prism{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(1240px,150vw);height:auto;overflow:visible}
+.p-beam,.p-ray{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1s var(--ease)}
+.p-beam{transition-delay:.35s}
+.p-ray{transition-delay:calc(.75s + var(--i,0) * .09s)}
+.p-body,.p-edge{opacity:0;transform:translateY(14px);transition:opacity .9s var(--ease) .25s,transform .9s var(--ease) .25s}
+.p-shadow{opacity:0;transition:opacity 1s var(--ease) .15s}
+.prism.is-lit .p-beam,.prism.is-lit .p-ray{stroke-dashoffset:0}
+.prism.is-lit .p-body,.prism.is-lit .p-edge{opacity:1;transform:none}
+.prism.is-lit .p-shadow{opacity:.5}
+@keyframes rayPulse{0%,100%{opacity:.82}50%{opacity:1}}
+.prism.is-lit .p-ray{animation:rayPulse 4.6s ease-in-out infinite calc(var(--i,0) * .3s)}
+
+/* ============================================================
+   MARQUEE
+   ============================================================ */
+.marquee{overflow:hidden;padding:22px 0;border-top:1px solid var(--hairline-d);border-bottom:1px solid var(--hairline-d);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marquee-track{display:flex;gap:0;width:max-content;animation:marq 46s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes marq{to{transform:translate3d(-50%,0,0)}}
+.m-item{display:flex;align-items:center;gap:34px;padding:0 17px;color:var(--ink-faint);font-weight:600;font-size:15px;letter-spacing:.01em;white-space:nowrap}
+.m-item .tick{width:5px;height:5px;border-radius:99px;background:var(--c-violet);opacity:.8}
+
+/* ============================================================
+   REVEAL
+   ============================================================ */
+.r{opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease) var(--d,0s),transform .9s var(--ease) var(--d,0s)}
+.r.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .r{opacity:1;transform:none;transition:none}
+  .aurora i,.marquee-track,.scroll-cue svg{animation:none!important}
+  .p-ray,.p-beam{stroke-dashoffset:0!important;animation:none!important}
+  .p-body,.p-edge,.p-shadow{opacity:1!important;transform:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<style>
+/* ============================================================
+   MAKES — artifact gallery (light)
+   ============================================================ */
+.light-blobs{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.light-blobs i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+.light-blobs i:nth-child(1){width:46vw;height:46vw;left:-14vw;top:-10vw;background:radial-gradient(circle,#C9C4FF 0%,transparent 65%)}
+.light-blobs i:nth-child(2){width:40vw;height:40vw;right:-12vw;top:6vw;background:radial-gradient(circle,#FFD3DE 0%,transparent 65%)}
+.light-blobs i:nth-child(3){width:32vw;height:32vw;left:22vw;bottom:-16vw;background:radial-gradient(circle,#C2F5EE 0%,transparent 65%)}
+
+.gallery-outer{position:relative}
+.gallery{
+  display:flex;gap:26px;overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;padding:12px 4px 34px;
+  scrollbar-width:none;cursor:grab;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent 100%);
+}
+.gallery::-webkit-scrollbar{display:none}
+.gallery.dragging{cursor:grabbing;scroll-snap-type:none}
+.gallery.dragging .shot{pointer-events:none}
+.shot{
+  flex:0 0 min(640px,82vw);scroll-snap-align:center;position:relative;
+  padding:14px;border-radius:30px;
+}
+.shot .win{display:flex;gap:6px;padding:2px 4px 12px}
+.shot .win i{width:10px;height:10px;border-radius:99px;background:rgba(22,23,43,.14)}
+.shot .win i:nth-child(1){background:#FF6B8A}.shot .win i:nth-child(2){background:#FFB43A}.shot .win i:nth-child(3){background:#44E08C}
+.shot img{border-radius:18px;box-shadow:0 24px 50px -30px rgba(22,23,43,.45);border:1px solid rgba(22,23,43,.07);-webkit-user-drag:none;user-select:none}
+.shot-meta{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 6px 4px}
+.shot-meta h3{font-size:18px;letter-spacing:-.02em}
+.shot-meta p{font-size:14px;color:var(--ink-d-dim);margin-top:2px}
+.level-chip{
+  flex:0 0 auto;padding:5px 12px;border-radius:999px;font-size:12.5px;font-weight:700;letter-spacing:.02em;
+  color:#fff;background:var(--lc,var(--c-indigo));
+  box-shadow:0 6px 16px -8px var(--lc,var(--c-indigo));
+}
+.shot-link{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--ink-d-dim);margin-top:6px}
+.shot-link:hover{color:var(--ink-d)}
+.shot-link svg{width:13px;height:13px}
+.gallery-nav{display:flex;gap:10px;justify-content:center;margin-top:-6px}
+.g-btn{
+  width:46px;height:46px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.8);border:1px solid rgba(22,23,43,.1);color:var(--ink-d);
+  transition:transform .3s var(--ease),background .3s,opacity .3s;
+  box-shadow:0 10px 26px -16px rgba(22,23,43,.4);
+}
+.g-btn:hover{background:#fff;transform:translateY(-2px)}
+.g-btn svg{width:17px;height:17px}
+.g-btn[disabled]{opacity:.35;pointer-events:none}
+.drag-hint{display:flex;justify-content:center;margin-top:10px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-d-faint);font-weight:600}
+
+/* ============================================================
+   DEMO — the desk simulation (dark)
+   ============================================================ */
+.demo-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:26px;align-items:stretch}
+@media (max-width:960px){.demo-grid{grid-template-columns:1fr}}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;justify-content:center}
+.tab{
+  display:inline-flex;align-items:center;gap:9px;padding:11px 18px;border-radius:999px;
+  font-size:14.5px;font-weight:600;color:var(--ink-dim);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  transition:color .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease),transform .3s var(--ease);
+  min-height:44px;
+}
+.tab:hover{color:var(--ink);transform:translateY(-1px)}
+.tab .swatch{width:9px;height:9px;border-radius:99px;background:var(--tc,#6E5BFF);box-shadow:0 0 10px var(--tc,#6E5BFF)}
+.tab[aria-selected="true"]{
+  color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.24);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 30px -18px var(--tc,#6E5BFF);
+}
+.desk{position:relative;padding:26px;min-height:420px;display:flex;flex-direction:column}
+.desk-head{display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--hairline-d);margin-bottom:18px}
+.desk-head .win{display:flex;gap:6px}
+.desk-head .win i{width:10px;height:10px;border-radius:99px;background:rgba(255,255,255,.18)}
+.desk-head .win i:nth-child(1){background:var(--c-coral)}.desk-head .win i:nth-child(2){background:var(--c-amber)}.desk-head .win i:nth-child(3){background:var(--c-mint)}
+.desk-head b{font-size:13.5px;font-weight:600;color:var(--ink-dim);letter-spacing:.01em}
+.desk-head .agent-dot{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-faint)}
+.desk-head .agent-dot::before{content:"";width:7px;height:7px;border-radius:99px;background:var(--c-mint);box-shadow:0 0 10px var(--c-mint)}
+.chat{display:flex;flex-direction:column;gap:14px;flex:1}
+.msg{max-width:92%;padding:13px 17px;border-radius:18px;font-size:15px;line-height:1.45;opacity:0;transform:translateY(12px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.msg.show{opacity:1;transform:none}
+.msg.user{align-self:flex-end;background:linear-gradient(135deg,rgba(110,91,255,.35),rgba(183,92,255,.28));border:1px solid rgba(255,255,255,.16);border-bottom-right-radius:6px;color:#fff}
+.msg.agent{align-self:flex-start;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:6px;color:var(--ink-dim)}
+.msg.agent b{color:var(--ink)}
+.steps{display:flex;flex-direction:column;gap:9px;align-self:flex-start;width:100%;max-width:92%;opacity:0;transition:opacity .5s var(--ease)}
+.steps.show{opacity:1}
+.step{display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:14px;color:var(--ink-dim)}
+.step .tick{width:20px;height:20px;border-radius:99px;flex:0 0 20px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.step .tick svg{width:11px;height:11px}
+.step.done .tick{background:var(--tc,#6E5BFF);border-color:transparent}
+.step .spin{width:11px;height:11px;border-radius:99px;border:2px solid rgba(255,255,255,.18);border-top-color:#fff;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.artifact{position:relative;padding:26px;display:flex;flex-direction:column}
+.artifact-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.artifact-head h3{font-size:16.5px;letter-spacing:-.015em}
+.artifact-badge{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--tc,#6E5BFF)}
+.artifact-body{position:relative;flex:1;display:flex;flex-direction:column;gap:14px}
+.artifact-img{
+  position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.12);
+  aspect-ratio:16/10.6;background:rgba(255,255,255,.03);
+}
+.artifact-img img{width:100%;height:100%;object-fit:cover;object-position:top}
+.artifact-img .skel{position:absolute;inset:0;background:linear-gradient(100deg,rgba(255,255,255,.04) 40%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.04) 60%);background-size:200% 100%;animation:skel 1.6s linear infinite}
+@keyframes skel{to{background-position:-200% 0}}
+.artifact-img img{opacity:0;transition:opacity .7s var(--ease)}
+.artifact-img.loaded img{opacity:1}
+.artifact-img.loaded .skel{opacity:0;transition:opacity .5s}
+.artifact-foot{margin-top:16px;display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-faint)}
+.artifact-foot .spark{width:16px;height:16px;color:var(--tc,#6E5BFF);flex:0 0 16px}
+.artifact-note{display:none;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:20px 22px}
+.artifact-note.on{display:block}
+.note-head{display:flex;align-items:center;gap:10px;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.1)}
+.note-ava{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--pc,#2BD9C7),color-mix(in srgb,var(--pc,#2BD9C7) 55%,#111))}
+.note-head b{font-size:15px}
+.note-head .note-sub{font-size:12.5px;color:var(--ink-faint)}
+.note-rows{display:flex;flex-direction:column;gap:10px}
+.note-row{display:flex;gap:12px;font-size:14.5px;line-height:1.5;color:var(--ink-dim)}
+.note-row .k{flex:0 0 92px;font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);padding-top:2px}
+.note-row .v{flex:1}
+.note-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.note-chips span{padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:600;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--ink-dim)}
+
+/* ============================================================
+   PIPELINES (light)
+   ============================================================ */
+.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media (max-width:1080px){.p-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:680px){.p-grid{grid-template-columns:1fr}}
+.p-card{position:relative;padding:30px 28px 26px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.p-card::before{content:"";position:absolute;top:0;left:28px;right:28px;height:3px;border-radius:0 0 99px 99px;background:var(--pc,#6E5BFF);opacity:.85;z-index:3}
+.p-card:hover{transform:translateY(-6px)}
+.p-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.p-ico{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--pc,#6E5BFF) 14%,#fff);color:var(--pc,#6E5BFF);box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.p-ico svg{width:21px;height:21px}
+.p-num{font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--ink-d-faint)}
+.p-card h3{font-size:20px;letter-spacing:-.02em}
+.p-io{font-size:13px;line-height:1.5;color:var(--ink-d-dim);background:rgba(22,23,43,.045);border:1px solid rgba(22,23,43,.07);border-radius:12px;padding:11px 14px}
+.p-io b{color:var(--ink-d);font-weight:600}
+.p-io .arrow{color:var(--pc,#6E5BFF);font-weight:700}
+.p-list{display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--ink-d-dim);margin:2px 0 4px}
+.p-list span{display:flex;gap:9px;align-items:flex-start}
+.p-list svg{width:14px;height:14px;flex:0 0 14px;margin-top:3.5px;color:var(--pc,#6E5BFF)}
+.p-link{margin-top:auto;display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--ink-d)}
+.p-link svg{width:14px;height:14px;transition:transform .3s var(--ease)}
+.p-card:hover .p-link svg{transform:translateX(3px)}
+
+/* ============================================================
+   HOW (dark)
+   ============================================================ */
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;position:relative}
+@media (max-width:960px){.how-grid{grid-template-columns:1fr}}
+.how-line{position:absolute;top:64px;left:6%;right:6%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22) 15%,rgba(255,255,255,.22) 85%,transparent);z-index:0}
+@media (max-width:960px){.how-line{display:none}}
+.how-step{padding:32px 30px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+.how-num{
+  width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:19px;color:#fff;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 85%,#fff),var(--pc));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 14px 30px -14px var(--pc);
+}
+.how-step h3{font-size:21px;letter-spacing:-.02em}
+.how-step p{font-size:15.5px;color:var(--ink-dim);line-height:1.55}
+.how-step .mono{font-size:13px;color:var(--ink-faint)}
+.trust{
+  margin-top:26px;padding:24px 30px;display:flex;align-items:center;gap:18px;
+  border-radius:var(--r-md);
+  background:linear-gradient(120deg,rgba(43,217,199,.1),rgba(110,91,255,.1));
+  border:1px solid rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+}
+.trust svg{width:26px;height:26px;flex:0 0 26px;color:var(--c-teal)}
+.trust p{font-size:15.5px;color:var(--ink-dim);line-height:1.55}
+.trust p b{color:var(--ink)}
+@media (max-width:680px){.trust{flex-direction:column;align-items:flex-start;gap:10px}}
+</style>
+
+<!-- ============================ NAV ============================ -->
+<div class="nav-outer" id="navOuter">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="#top" aria-label="Prism home">
+      <svg viewBox="0 0 34 32" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="lgMark" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="rgba(255,255,255,.32)"/><stop offset="1" stop-color="rgba(255,255,255,.07)"/>
+          </linearGradient>
+        </defs>
+        <path d="M0 19h12" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M16.5 6.5 28 27H5Z" fill="url(#lgMark)" stroke="rgba(255,255,255,.92)" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M22.3 16.8 33 12.6" stroke="#6E5BFF" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+        <path d="M24.1 19.6 33 17.4" stroke="#2BD9C7" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+        <path d="M25.9 22.4 32.7 22.2" stroke="#FF6B8A" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+      </svg>
+      Prism
+    </a>
+    <div class="nav-links">
+      <a href="#makes">What it makes</a>
+      <a href="#pipelines">Pipelines</a>
+      <a href="#how">How it works</a>
+      <a href="#install">Install</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a class="nav-github" href="https://github.com/itsfedor/esl-automation-suite" target="_blank" rel="noopener" aria-label="GitHub repository">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+      <a class="btn btn-primary" href="#install">Install the suite</a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#makes">What it makes</a>
+  <a href="#pipelines">Pipelines</a>
+  <a href="#how">How it works</a>
+  <a href="#install">Install</a>
+  <a href="#faq">FAQ</a>
+  <a class="btn btn-primary btn-lg" href="#install">Install the suite</a>
+</div>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero" id="top">
+  <div class="bg-image" style="background-image:url('assets/raw/aurora.jpg');opacity:.42"></div>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="prism-scene">
+    <svg class="prism" id="prismSvg" viewBox="0 0 1200 700" fill="none" role="img" aria-labelledby="prismTitle">
+      <title id="prismTitle">White light entering a glass prism and fanning out into six colored beams — one per pipeline</title>
+      <defs>
+        <linearGradient id="pBeam" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#F2F3F8" stop-opacity="0"/>
+          <stop offset="1" stop-color="#F2F3F8"/>
+        </linearGradient>
+        <linearGradient id="pGlass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fff" stop-opacity=".26"/>
+          <stop offset=".55" stop-color="#fff" stop-opacity=".05"/>
+          <stop offset="1" stop-color="#fff" stop-opacity=".16"/>
+        </linearGradient>
+        <filter id="pBloom" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <ellipse class="p-shadow" cx="530" cy="560" rx="230" ry="30" fill="#000"/>
+      <path class="p-beam" d="M-40 378 H505" pathLength="1" stroke="url(#pBeam)" stroke-width="4" stroke-linecap="round"/>
+      <path class="p-beam-inner" d="M505 378 L601 316" pathLength="1" opacity=".5" stroke="#F2F3F8" stroke-width="2.4"/>
+      <g class="p-rays" fill="none" stroke-width="5" stroke-linecap="round" filter="url(#pBloom)">
+        <path class="p-ray" style="--i:0" pathLength="1" stroke="#6E5BFF" d="M601 316 L1240 140"/>
+        <path class="p-ray" style="--i:1" pathLength="1" stroke="#B75CFF" d="M619 354 L1260 210"/>
+        <path class="p-ray" style="--i:2" pathLength="1" stroke="#FF6B8A" d="M637 391 L1270 280"/>
+        <path class="p-ray" style="--i:3" pathLength="1" stroke="#FFB43A" d="M655 428 L1270 350"/>
+        <path class="p-ray" style="--i:4" pathLength="1" stroke="#2BD9C7" d="M673 465 L1260 420"/>
+        <path class="p-ray" style="--i:5" pathLength="1" stroke="#44E08C" d="M691 502 L1250 490"/>
+      </g>
+      <path class="p-body" d="M520 150 L700 520 L340 520 Z" fill="url(#pGlass)" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-linejoin="round"/>
+      <path class="p-edge" d="M520 150 L700 520" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <div class="wrap hero-inner">
+    <span class="eyebrow r"><span class="dot"></span>Open source · MIT · agent skills</span>
+    <h1 class="r" style="--d:.06s">Hours of prep,<br><span class="grad-text">done in minutes.</span></h1>
+    <p class="sub r" style="--d:.12s">Six open-source pipelines that run inside the AI agent you already use. Feed in a video, a voice note, or an episode script — get back a teacher's guide, ready homework, or a finished lesson in Edvibe.</p>
+    <div class="hero-ctas r" style="--d:.18s">
+      <a class="btn btn-primary btn-lg" href="#install">Install the suite
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </a>
+      <a class="btn btn-ghost btn-lg" href="#makes">See what it makes</a>
+    </div>
+    <div class="hero-chips r" style="--d:.24s">
+      <span class="chip"><span class="swatch" style="background:var(--c-indigo)"></span><b>6</b>&nbsp;pipelines</span>
+      <span class="chip"><span class="swatch" style="background:var(--c-teal)"></span><b>3</b>&nbsp;skills</span>
+      <span class="chip"><span class="swatch" style="background:var(--c-amber)"></span><b>70+</b>&nbsp;agents</span>
+      <span class="chip"><span class="swatch" style="background:var(--c-mint)"></span><b>0</b>&nbsp;servers</span>
+    </div>
+  </div>
+
+  <div class="hero-stage wrap">
+    <div class="stage-deck" id="deck">
+      <div class="stage-glow" aria-hidden="true"></div>
+      <div class="glass deck-card deck-main" data-depth="6" data-spec>
+        <img src="assets/shots/lesson-guide-B2.jpg" alt="Lesson guide artifact: vocabulary, exercises and discussion built from a YouTube video">
+      </div>
+      <div class="glass deck-card deck-a" data-depth="16" data-spec>
+        <img src="assets/shots/teacher-kit-B1.jpg" alt="Small-talk teacher kit artifact at level B1">
+      </div>
+      <div class="glass deck-card deck-b" data-depth="22" data-spec>
+        <img src="assets/shots/c1-exercise.jpg" alt="C1 visual-data writing exercise with charts">
+      </div>
+      <div class="glass deck-card deck-c" data-depth="12" data-spec>
+        <img src="assets/shots/bar-chart-example.jpg" alt="Chart generated for a C1 writing exercise">
+      </div>
+    </div>
+    <div class="scroll-cue r" style="--d:.4s"><span>Scroll
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    </span></div>
+  </div>
+  <div class="hero-fade" aria-hidden="true"></div>
+</section>
+
+<!-- ============================ MARQUEE ============================ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="m-item"><span class="tick"></span>Hermes Agent</div>
+    <div class="m-item"><span class="tick"></span>Claude Code</div>
+    <div class="m-item"><span class="tick"></span>Codex CLI</div>
+    <div class="m-item"><span class="tick"></span>Cursor</div>
+    <div class="m-item"><span class="tick"></span>agentskills.io</div>
+    <div class="m-item"><span class="tick"></span>Edvibe</div>
+    <div class="m-item"><span class="tick"></span>Notion</div>
+    <div class="m-item"><span class="tick"></span>Deepgram</div>
+    <div class="m-item"><span class="tick"></span>SKILL.md format</div>
+    <div class="m-item"><span class="tick"></span>MIT</div>
+    <div class="m-item"><span class="tick"></span>Hermes Agent</div>
+    <div class="m-item"><span class="tick"></span>Claude Code</div>
+    <div class="m-item"><span class="tick"></span>Codex CLI</div>
+    <div class="m-item"><span class="tick"></span>Cursor</div>
+    <div class="m-item"><span class="tick"></span>agentskills.io</div>
+    <div class="m-item"><span class="tick"></span>Edvibe</div>
+    <div class="m-item"><span class="tick"></span>Notion</div>
+    <div class="m-item"><span class="tick"></span>Deepgram</div>
+    <div class="m-item"><span class="tick"></span>SKILL.md format</div>
+    <div class="m-item"><span class="tick"></span>MIT</div>
+  </div>
+</div>
+<!-- ============================ MAKES ============================ -->
+<section class="section light" id="makes">
+  <div class="light-blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <div class="section-head r">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-indigo);box-shadow:0 0 12px var(--c-indigo)"></span>What it makes</span>
+      <h2 class="h2">Not demos.<br>A Tuesday's real output.</h2>
+      <p class="sub">Every artifact below came out of these pipelines — from a real video, a real voice note, a real student. Open any of them; the full examples ship with the suite.</p>
+    </div>
+  </div>
+
+  <div class="wrap gallery-outer">
+    <div class="gallery r" id="gallery" tabindex="0" role="region" aria-label="Artifacts produced by Prism pipelines — scroll horizontally or drag">
+      <article class="shot glass-l" data-spec>
+        <div class="win" aria-hidden="true"><i></i><i></i><i></i></div>
+        <img src="assets/shots/lesson-guide-B2.jpg" alt="Lesson guide built from a YouTube video at level B2" loading="lazy">
+        <div class="shot-meta">
+          <div><h3>Lesson guide</h3><p>From a 3-minute video — vocabulary, comprehension with timestamps, warm-up, discussion, keys.</p></div>
+          <span class="level-chip" style="--lc:var(--c-indigo)">B2</span>
+        </div>
+        <a class="shot-link" href="assets/examples/lesson-guide-dangers-of-copying-successful-people-B2.html" target="_blank" rel="noopener">Open the full guide
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+
+      <article class="shot glass-l" data-spec>
+        <div class="win" aria-hidden="true"><i></i><i></i><i></i></div>
+        <img src="assets/shots/teacher-kit-B1.jpg" alt="Small-talk teacher kit at level B1" loading="lazy">
+        <div class="shot-meta">
+          <div><h3>Teacher kit</h3><p>A small-talk course in six lessons — warm-ups, phrases, role-plays, reactions, fillers.</p></div>
+          <span class="level-chip" style="--lc:var(--c-amber)">B1</span>
+        </div>
+        <a class="shot-link" href="assets/examples/teacher-kit-small-talk-course-B1.html" target="_blank" rel="noopener">Open the full kit
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+
+      <article class="shot glass-l" data-spec>
+        <div class="win" aria-hidden="true"><i></i><i></i><i></i></div>
+        <img src="assets/shots/c1-exercise.jpg" alt="C1 visual-data writing exercise with charts" loading="lazy">
+        <div class="shot-meta">
+          <div><h3>Writing exercise</h3><p>Describing Visual Data — a language cheat sheet plus three tasks: pie, bar and table.</p></div>
+          <span class="level-chip" style="--lc:var(--c-coral)">C1</span>
+        </div>
+        <a class="shot-link" href="assets/examples/c1-visual-data-exercise.html" target="_blank" rel="noopener">Open the exercise
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+
+      <article class="shot glass-l" data-spec>
+        <div class="win" aria-hidden="true"><i></i><i></i><i></i></div>
+        <img src="assets/shots/bar-chart-example.jpg" alt="Generated bar chart for a visual-data task" loading="lazy">
+        <div class="shot-meta">
+          <div><h3>Chart set</h3><p>Bar, pie and table figures, generated for data-description tasks.</p></div>
+          <span class="level-chip" style="--lc:var(--c-teal)">C1</span>
+        </div>
+        <a class="shot-link" href="assets/examples/c1-visual-data-exercise.html" target="_blank" rel="noopener">Open an example
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </article>
+    </div>
+    <div class="gallery-nav" aria-label="Gallery navigation">
+      <button class="g-btn" id="gPrev" aria-label="Previous artifact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <button class="g-btn" id="gNext" aria-label="Next artifact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="drag-hint">Drag to explore</div>
+  </div>
+</section>
+
+<!-- ============================ DEMO ============================ -->
+<section class="section dark" id="demo">
+  <div class="aurora" aria-hidden="true" style="opacity:.5"><i></i><i></i><i style="left:auto;right:0;top:auto;bottom:-10vw"></i></div>
+  <div class="wrap">
+    <div class="section-head center r">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-violet);box-shadow:0 0 12px var(--c-violet)"></span>Watch it work</span>
+      <h2 class="h2">One paste.<br>One finished artifact.</h2>
+      <p class="sub">A simulation — paste the same lines into your agent and these are the artifacts you get.</p>
+    </div>
+
+    <div class="tabs r" role="tablist" aria-label="Input types" id="demoTabs">
+      <button class="tab" role="tab" id="tab-video" aria-selected="true" aria-controls="panel-desk" style="--tc:var(--c-indigo)" data-demo="video"><span class="swatch"></span>YouTube video</button>
+      <button class="tab" role="tab" id="tab-voice" aria-selected="false" aria-controls="panel-desk" style="--tc:var(--c-teal)" data-demo="voice"><span class="swatch"></span>Voice note</button>
+      <button class="tab" role="tab" id="tab-tv" aria-selected="false" aria-controls="panel-desk" style="--tc:var(--c-coral)" data-demo="tv"><span class="swatch"></span>Episode script</button>
+      <button class="tab" role="tab" id="tab-te" aria-selected="false" aria-controls="panel-desk" style="--tc:var(--c-amber)" data-demo="te"><span class="swatch"></span>Test-English exercise</button>
+    </div>
+
+    <div class="demo-grid r" id="panel-desk" role="tabpanel" aria-labelledby="tab-video">
+      <div class="desk glass">
+        <div class="desk-head">
+          <div class="win" aria-hidden="true"><i></i><i></i><i></i></div>
+          <b id="deskTitle" class="mono">lesson-guide.pipeline</b>
+          <span class="agent-dot" id="deskStatus">agent ready</span>
+        </div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+      </div>
+
+      <div class="artifact glass" data-spec>
+        <div class="artifact-head">
+          <h3 id="artTitle">Teacher's guide — B2</h3>
+          <span class="artifact-badge" id="artBadge" style="--tc:var(--c-indigo)">Lesson guide</span>
+        </div>
+        <div class="artifact-body">
+          <div class="artifact-img" id="artImg">
+            <div class="skel"></div>
+            <img id="artImgEl" src="assets/shots/lesson-guide-B2.jpg" alt="Generated artifact preview">
+          </div>
+          <div class="artifact-note" id="artNote" style="--pc:var(--c-teal)"></div>
+        </div>
+        <div class="artifact-foot">
+          <svg class="spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+          <span id="artFoot">Formatted for Edvibe, print-ready for class.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PIPELINES ============================ -->
+<section class="section light" id="pipelines">
+  <div class="light-blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <div class="section-head r">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-coral);box-shadow:0 0 12px var(--c-coral)"></span>Pipelines</span>
+      <h2 class="h2">Six pipelines.<br>One quiet desk.</h2>
+      <p class="sub">Each one takes raw material and returns a finished artifact. Docs for all six live in the repo.</p>
+    </div>
+
+    <div class="p-grid">
+      <article class="p-card glass-l r" style="--pc:var(--c-indigo)" data-spec>
+        <div class="p-top">
+          <div class="p-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l4 4v14H4V3h4z"/><path d="M9 12h6M9 16h6M9 8h2"/></svg></div>
+          <span class="p-num">01</span>
+        </div>
+        <h3>Lesson Guide Generator</h3>
+        <div class="p-io"><b>YouTube URL or transcript</b> <span class="arrow">→</span> a full teacher's guide with answer keys</div>
+        <div class="p-list">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Vocabulary, comprehension, 4 core + 2 bonus exercises</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>HTML file, ready to paste into Edvibe</span>
+        </div>
+        <a class="p-link" href="https://github.com/itsfedor/esl-automation-suite/blob/main/docs/homework-generator.md" target="_blank" rel="noopener">Read the docs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+
+      <article class="p-card glass-l r" style="--pc:var(--c-teal);--d:.06s" data-spec>
+        <div class="p-top">
+          <div class="p-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5"/></svg></div>
+          <span class="p-num">02</span>
+        </div>
+        <h3>Student Voice Log</h3>
+        <div class="p-io"><b>Voice note about a student</b> <span class="arrow">→</span> a dated entry in your Notion tracker</div>
+        <div class="p-list">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Transcribed, then split: student, date, topic, next steps</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>The detail lives in the tracker, not in your head</span>
+        </div>
+        <a class="p-link" href="https://github.com/itsfedor/esl-automation-suite/blob/main/docs/student-voice-log.md" target="_blank" rel="noopener">Read the docs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+
+      <article class="p-card glass-l r" style="--pc:var(--c-coral);--d:.12s" data-spec>
+        <div class="p-top">
+          <div class="p-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.8l6 3.2-6 3.2z"/></svg></div>
+          <span class="p-num">03</span>
+        </div>
+        <h3>Video Review Summary</h3>
+        <div class="p-io"><b>A recorded homework review</b> <span class="arrow">→</span> a student-facing HTML recap</div>
+        <div class="p-list">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Deepgram covers the English-Russian mix</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>One section per task: color-coded fixes, strengths, practice tips</span>
+        </div>
+        <a class="p-link" href="https://github.com/itsfedor/esl-automation-suite/blob/main/docs/esl-video-review-summary.md" target="_blank" rel="noopener">Read the docs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+
+      <article class="p-card glass-l r" style="--pc:var(--c-amber)" data-spec>
+        <div class="p-top">
+          <div class="p-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M8 21h8M12 18v3M7.5 10.5h4"/></svg></div>
+          <span class="p-num">04</span>
+        </div>
+        <h3>TV-Episode Homework</h3>
+        <div class="p-io"><b>An episode script</b> <span class="arrow">→</span> recap plus 4+2 exercises, or a lesson series</div>
+        <div class="p-list">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Homework capped at 15 minutes of student work</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Tasks built from real lines in the episode</span>
+        </div>
+        <a class="p-link" href="https://github.com/itsfedor/esl-automation-suite/blob/main/docs/tv-episode-homework.md" target="_blank" rel="noopener">Read the docs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+
+      <article class="p-card glass-l r" style="--pc:var(--c-violet);--d:.06s" data-spec>
+        <div class="p-top">
+          <div class="p-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 13.5a5 5 0 0 0 7.1 0l2.4-2.4a5 5 0 0 0-7.1-7.1L11.5 5.4"/><path d="M13.5 10.5a5 5 0 0 0-7.1 0l-2.4 2.4a5 5 0 0 0 7.1 7.1l1.4-1.4"/></svg></div>
+          <span class="p-num">05</span>
+        </div>
+        <h3>Test-English Adaptation</h3>
+        <div class="p-io"><b>Any test-english.com exercise</b> <span class="arrow">→</span> the same exercise, written for one student</div>
+        <div class="p-list">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Levels A1 through C1; the exercise type stays the same</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Chart images generated for data-description tasks</span>
+        </div>
+        <a class="p-link" href="https://github.com/itsfedor/esl-automation-suite/blob/main/docs/test-english-adaptation.md" target="_blank" rel="noopener">Read the docs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+
+      <article class="p-card glass-l r" style="--pc:var(--c-mint);--d:.12s" data-spec>
+        <div class="p-top">
+          <div class="p-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.6L18 9l-4.3 1.4L12 15l-1.7-4.6L6 9l4.3-1.4z"/><path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg></div>
+          <span class="p-num">06</span>
+        </div>
+        <h3>Edvibe Teacher</h3>
+        <div class="p-io"><b>A topic or lesson plan</b> <span class="arrow">→</span> a finished lesson inside Edvibe</div>
+        <div class="p-list">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>16 exercise types, answer keys, wordlists with audio</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Built from chat; you review, then publish</span>
+        </div>
+        <a class="p-link" href="https://github.com/itsfedor/esl-automation-suite/blob/main/docs/edvibe-teacher.md" target="_blank" rel="noopener">Read the docs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ HOW ============================ -->
+<section class="section dark" id="how">
+  <div class="bg-image" style="background-image:url('assets/raw/prism-a.jpg');opacity:.2;background-position:center 62%"></div>
+  <div class="aurora" aria-hidden="true" style="opacity:.4"><i></i><i style="left:auto;right:0"></i></div>
+  <div class="wrap">
+    <div class="section-head center r">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-amber);box-shadow:0 0 12px var(--c-amber)"></span>How it works</span>
+      <h2 class="h2">Extract first.<br>Generate second.</h2>
+      <p class="sub">All six pipelines run the same three steps — and none of them writes a word before the source is in hand.</p>
+    </div>
+
+    <div class="how-grid">
+      <div class="how-line" aria-hidden="true"></div>
+      <article class="how-step glass r" style="--pc:var(--c-indigo)" data-spec>
+        <div class="how-num">1</div>
+        <h3>Extract</h3>
+        <p>The pipeline pulls the raw material first: a transcript, a voice note, a script, the text of an exercise. Nothing gets written until the source is in hand.</p>
+        <span class="mono">transcript · script · audio → structured source</span>
+      </article>
+      <article class="how-step glass r" style="--pc:var(--c-violet);--d:.08s" data-spec>
+        <div class="how-num">2</div>
+        <h3>Generate</h3>
+        <p>A fixed structure plus level-aware prompts build the artifact in your house style: vocabulary taken from the source, the same exercise layout every time. Quoted lines get checked against the source before anything ships.</p>
+        <span class="mono">source + level contract → your house style</span>
+      </article>
+      <article class="how-step glass r" style="--pc:var(--c-teal);--d:.16s" data-spec>
+        <div class="how-num">3</div>
+        <h3>Deliver</h3>
+        <p>It ships as a file you can paste, a summary you can send, or a lesson written straight into your own Edvibe account through a local CLI.</p>
+        <span class="mono">artifact → Edvibe · Notion · your student</span>
+      </article>
+    </div>
+
+    <div class="trust r">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l7.5 3v6c0 4.6-3.2 8.4-7.5 9.9-4.3-1.5-7.5-5.3-7.5-9.9v-6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg>
+      <p><b>Nothing in the middle.</b> Everything runs on your own machine, under your own Edvibe login. The password is typed once, in your terminal, and never leaves it; the session stays cached on your computer, and nothing is shared between teachers. Quoted lines are checked against the source programmatically — nothing reaches a student before you have read it.</p>
+    </div>
+  </div>
+</section>
+<style>
+/* ============================================================
+   EVENING (light) — before / after
+   ============================================================ */
+.eve-switch{display:flex;gap:6px;justify-content:center;margin:0 auto 34px;padding:6px;border-radius:999px;width:max-content;
+  background:rgba(255,255,255,.75);border:1px solid rgba(22,23,43,.08);box-shadow:0 14px 34px -22px rgba(22,23,43,.45)}
+.eve-btn{padding:11px 24px;border-radius:999px;font-size:15px;font-weight:600;color:var(--ink-d-dim);transition:color .3s var(--ease),background .3s var(--ease),box-shadow .3s var(--ease);min-height:44px}
+.eve-btn:hover{color:var(--ink-d)}
+.eve-btn.on{color:#fff;background:linear-gradient(135deg,var(--c-indigo),var(--c-violet));box-shadow:0 10px 26px -12px rgba(110,91,255,.7)}
+.eve-btn[data-eve="before"].on{background:linear-gradient(135deg,#6B6D80,#4B4D60);box-shadow:0 10px 26px -12px rgba(75,77,96,.6)}
+.eve-panels{max-width:760px;margin:0 auto;position:relative;display:grid}
+.eve-panel{grid-area:1/1;display:none;padding:34px 36px}
+.eve-panel.on{display:block;animation:fadeUp .55s var(--ease) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.eve-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-bottom:18px;margin-bottom:6px;border-bottom:1px solid var(--hairline)}
+.eve-tag{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14px}
+.eve-tag::before{content:"";width:9px;height:9px;border-radius:99px;background:var(--ec,#6E5BFF)}
+.eve-total{font-size:13.5px;font-weight:700;padding:6px 14px;border-radius:999px;background:rgba(22,23,43,.05);color:var(--ink-d-dim)}
+.tl{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column}
+.tl li{display:flex;gap:18px;padding:13px 0;border-bottom:1px dashed rgba(22,23,43,.08);align-items:baseline}
+.tl li:last-child{border-bottom:0}
+.tl .t{flex:0 0 64px;font-weight:700;font-size:14px;letter-spacing:.01em}
+#eve-before .tl .t{color:#8E8FA3}
+#eve-after .tl .t{color:var(--c-indigo)}
+.tl p{font-size:15.5px;color:var(--ink-d-dim);line-height:1.5}
+.eve-punch{text-align:center;margin-top:30px;font-size:17px;font-weight:600;color:var(--ink-d-dim)}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+.stats-band{padding:96px 0;border-top:1px solid var(--hairline-d)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+@media (max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.stats-grid{grid-template-columns:1fr}}
+.stat{display:flex;flex-direction:column;gap:6px;text-align:left}
+.stat b{font-size:clamp(40px,4.6vw,60px);font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;
+  background:var(--spectrum);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradShift 12s ease-in-out infinite alternate}
+.stat span{font-size:14.5px;color:var(--ink-dim)}
+
+/* ============================================================
+   INSTALL
+   ============================================================ */
+.install-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;align-items:start}
+@media (max-width:960px){.install-grid{grid-template-columns:1fr}}
+.term{overflow:hidden;border-radius:var(--r-md)}
+.term-head{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--hairline-d)}
+.term-head .win{display:flex;gap:6px}
+.term-head .win i{width:10px;height:10px;border-radius:99px}
+.term-head .win i:nth-child(1){background:#FF6B8A}.term-head .win i:nth-child(2){background:#FFB43A}.term-head .win i:nth-child(3){background:#44E08C}
+.term-head b{font-size:13px;font-weight:600;color:var(--ink-faint)}
+.term-body{padding:24px}
+.cmd{display:flex;align-items:center;gap:12px;font-size:14.5px;padding:18px;border-radius:14px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);overflow-x:auto;white-space:nowrap}
+.cmd .prompt{color:var(--c-teal);font-weight:700;flex:0 0 auto}
+.cmd .code{color:#E8E9F5}
+.caret{width:8px;height:19px;background:#fff;opacity:.75;animation:caret 1.06s steps(1) infinite;flex:0 0 8px;border-radius:2px}
+@keyframes caret{0%,49%{opacity:.75}50%,100%{opacity:0}}
+.term-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn.ok{background:linear-gradient(135deg,var(--c-mint),var(--c-teal));color:#032420}
+.insteps{display:flex;flex-direction:column;gap:14px}
+.instep{display:flex;gap:16px;padding:20px 22px;align-items:flex-start}
+.instep .n{width:30px;height:30px;flex:0 0 30px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--c-indigo),var(--c-violet));box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.instep h4{font-size:16px;letter-spacing:-.01em;margin-bottom:3px}
+.instep p{font-size:14.5px;color:var(--ink-dim);line-height:1.5}
+.agent-block{margin-top:24px;padding:26px 28px;display:flex;align-items:center;gap:20px;justify-content:space-between;flex-wrap:wrap}
+.agent-block .q{font-size:15px;color:var(--ink-dim);line-height:1.6;max-width:660px}
+.agent-block .q b{color:var(--ink)}
+.agent-block .mono{font-size:14px;color:#CFCBFF;display:block;margin-top:8px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.09);padding:12px 16px;border-radius:12px;overflow-x:auto;white-space:nowrap;max-width:100%}
+.agent-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;justify-content:center;font-size:14.5px;color:var(--ink-faint);font-weight:600}
+.agent-row i{font-style:normal;display:inline-flex;align-items:center;gap:8px}
+.agent-row i::before{content:"";width:6px;height:6px;border-radius:99px;background:var(--c-mint);opacity:.9}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+.faq-list{max-width:840px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+details.faq{
+  border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(22,23,43,.08);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  transition:background .3s var(--ease),box-shadow .3s var(--ease);
+}
+details.faq:hover{background:#fff;box-shadow:0 18px 44px -30px rgba(22,23,43,.4)}
+details.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:16px;padding:21px 26px;font-weight:600;font-size:16.5px;letter-spacing:-.012em}
+details.faq summary::-webkit-details-marker{display:none}
+.faq .plus{margin-left:auto;width:28px;height:28px;flex:0 0 28px;border-radius:99px;background:rgba(22,23,43,.06);display:flex;align-items:center;justify-content:center;transition:transform .4s var(--ease),background .3s}
+details.faq[open] .plus{transform:rotate(45deg);background:rgba(110,91,255,.12)}
+.faq .plus svg{width:14px;height:14px;color:var(--ink-d)}
+.faq .a{padding:0 26px 24px;color:var(--ink-d-dim);font-size:15.5px;line-height:1.65;max-width:70ch}
+
+/* ============================================================
+   CTA + FOOTER
+   ============================================================ */
+.cta{padding:150px 0 140px;overflow:clip;text-align:center}
+.cta .bg-image{opacity:.3}
+.cta-inner{display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;z-index:2}
+.cta .h2{font-size:clamp(40px,6vw,76px)}
+.spectrum-line{height:2px;background:var(--spectrum);opacity:.55}
+.footer{padding:76px 0 44px}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:32px}
+@media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.footer-grid{grid-template-columns:1fr}}
+.footer h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 16px;font-weight:700}
+.footer .f-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;color:#fff;margin-bottom:14px}
+.footer .f-logo svg{width:26px;height:26px}
+.footer .f-about{font-size:14.5px;color:var(--ink-dim);line-height:1.6;max-width:36ch}
+.footer-col a{display:block;padding:5.5px 0;font-size:14.5px;color:var(--ink-dim);transition:color .25s}
+.footer-col a:hover{color:#fff}
+.footer-base{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:60px;padding-top:26px;border-top:1px solid var(--hairline-d);font-size:13px;color:var(--ink-faint)}
+.footer-base span{max-width:60ch}
+
+@media (max-width:680px){
+  .section{padding:90px 0}
+  .hero{padding:158px 0 64px}
+  .hero-chips{display:none}
+  .deck-a{left:-6%;bottom:-12%}
+  .deck-b{right:-6%;top:-14%}
+  .shot{flex-basis:86vw}
+  .eve-panel{padding:26px 22px}
+  .tl .t{flex-basis:54px;font-size:13px}
+  .cmd{font-size:12.5px;padding:14px}
+}
+
+/* ---------- intrinsic-size hardening (nowrap scroll boxes must not blow up grid/flex tracks) ---------- */
+html{overflow-x:clip}
+.install-grid>*,.demo-grid>*,.p-grid>*,.how-grid>*,.stats-grid>*,.footer-grid>*,.eve-panels>*{min-width:0}
+.agent-block>*{min-width:0}
+.agent-block .mono{max-width:100%;min-width:0}
+.desk,.term,.cmd,.artifact{min-width:0}
+.msg{overflow-wrap:anywhere}
+.eve-switch{max-width:100%}
+.insteps{min-width:0}
+@media (max-width:680px){
+  .agent-block .mono{font-size:12.5px}
+  .cmd{font-size:12px}
+}
+</style>
+
+<!-- ============================ EVENING ============================ -->
+<section class="section light" id="evening">
+  <div class="light-blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <div class="section-head center r">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-mint);box-shadow:0 0 12px var(--c-mint)"></span>The difference</span>
+      <h2 class="h2">A Tuesday evening, both ways.</h2>
+      <p class="sub">Same teacher, same students, same B2 video — prepared twice. Times are illustrative.</p>
+    </div>
+
+    <div class="eve-switch r" role="group" aria-label="Compare the two evenings">
+      <button class="eve-btn on" data-eve="before" aria-pressed="true">Before Prism</button>
+      <button class="eve-btn" data-eve="after" aria-pressed="false">With Prism</button>
+    </div>
+
+    <div class="eve-panels r">
+      <div class="eve-panel glass-l on" id="eve-before">
+        <div class="eve-head">
+          <span class="eve-tag" style="--ec:#8E8FA3">Manual prep</span>
+          <span class="eve-total mono">≈ 1 h 45 m</span>
+        </div>
+        <ul class="tl">
+          <li><span class="t mono">19:20</span><p>Open the video. Watch it with a notepad, then rewind the parts worth quoting.</p></li>
+          <li><span class="t mono">19:45</span><p>Pull the vocabulary by hand and second-guess the level.</p></li>
+          <li><span class="t mono">20:10</span><p>Write four exercises, then add two more so the homework isn't thin.</p></li>
+          <li><span class="t mono">20:40</span><p>Format all of it so it pastes into Edvibe without breaking.</p></li>
+          <li><span class="t mono">21:05</span><p>Notice the answer key is still sitting in the student copy. Fix it.</p></li>
+        </ul>
+      </div>
+      <div class="eve-panel glass-l" id="eve-after">
+        <div class="eve-head">
+          <span class="eve-tag" style="--ec:var(--c-indigo)">With Prism</span>
+          <span class="eve-total mono">≈ 10 m</span>
+        </div>
+        <ul class="tl">
+          <li><span class="t mono">19:20</span><p>Paste the video link and the level: “B2 guide, four plus two, under 15 minutes.”</p></li>
+          <li><span class="t mono">19:23</span><p>Read the guide. Drop one exercise that is off for this group.</p></li>
+          <li><span class="t mono">19:27</span><p>Paste it into Edvibe and check the answer key is separate.</p></li>
+          <li><span class="t mono">19:30</span><p>Done. Ten minutes, start to finish.</p></li>
+        </ul>
+      </div>
+    </div>
+    <p class="eve-punch r">105 minutes became 10 — and the guide at the end is the guide you would have written.</p>
+  </div>
+</section>
+
+<!-- ============================ STATS + INSTALL ============================ -->
+<section class="dark" id="install">
+  <div class="wrap stats-band">
+    <div class="stats-grid">
+      <div class="stat r"><b data-count="6">6</b><span>Pipelines in the suite</span></div>
+      <div class="stat r" style="--d:.07s"><b data-count="3">3</b><span>Skills, installed in one command</span></div>
+      <div class="stat r" style="--d:.14s"><b data-count="70" data-suffix="+">70+</b><span>AI agents the skills install into</span></div>
+      <div class="stat r" style="--d:.21s"><b data-count="0">0</b><span>Servers between you and your students</span></div>
+    </div>
+  </div>
+
+  <div class="section" style="border-top:1px solid var(--hairline-d)">
+    <div class="wrap">
+      <div class="section-head center r">
+        <span class="eyebrow"><span class="dot" style="background:var(--c-teal);box-shadow:0 0 12px var(--c-teal)"></span>Install</span>
+        <h2 class="h2">Two prerequisites.<br>One line.</h2>
+        <p class="sub">Node 18+ and Python 3.9+ on Linux or macOS. Nothing else. No account, no server.</p>
+      </div>
+
+      <div class="install-grid">
+        <div class="term glass r" data-spec>
+          <div class="term-head">
+            <div class="win" aria-hidden="true"><i></i><i></i><i></i></div>
+            <b class="mono">terminal</b>
+          </div>
+          <div class="term-body">
+            <div class="cmd">
+              <span class="prompt mono" aria-hidden="true">$</span>
+              <span class="code mono" id="typeCmd"></span>
+              <span class="caret" aria-hidden="true"></span>
+            </div>
+            <div class="term-actions">
+              <button class="btn btn-primary" data-copy="npx skills add itsfedor/esl-automation-suite -g -y">
+                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                <span class="lbl">Copy command</span>
+              </button>
+              <a class="btn btn-ghost" href="https://github.com/itsfedor/esl-automation-suite" target="_blank" rel="noopener">View on GitHub</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="insteps">
+          <div class="instep glass r" style="--d:.06s" data-spec>
+            <div class="n">1</div>
+            <div><h4>Check your versions</h4><p>Node 18+ and Python 3.9+. Run <span class="mono">node -v</span> and you are half done.</p></div>
+          </div>
+          <div class="instep glass r" style="--d:.12s" data-spec>
+            <div class="n">2</div>
+            <div><h4>Run the one-liner</h4><p>Installs all three skills into every agent it detects. Add <span class="mono">-a hermes-agent</span>, <span class="mono">-a claude-code</span> or <span class="mono">-a codex</span> to target one.</p></div>
+          </div>
+          <div class="instep glass r" style="--d:.18s" data-spec>
+            <div class="n">3</div>
+            <div><h4>Connect Edvibe</h4><p>Ask your agent to “connect Edvibe”. It installs the local CLI, walks you through a one-time login, then lessons build straight from chat.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-block glass r" data-spec>
+        <div class="q">
+          <b>In a hurry? Paste this into your agent.</b> It reads the install guide, sets everything up, and tells you when it is ready.
+          <span class="mono">Install the skills from https://github.com/itsfedor/esl-automation-suite — read and follow INSTALL.md.</span>
+        </div>
+        <button class="btn btn-primary" data-copy="Install the skills from https://github.com/itsfedor/esl-automation-suite — read and follow INSTALL.md.">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <span class="lbl">Copy prompt</span>
+        </button>
+      </div>
+
+      <div class="agent-row r">
+        <i>Hermes Agent</i><i>Claude Code</i><i>Codex CLI</i><i>Cursor</i><i>agentskills.io · 70+ more</i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FAQ ============================ -->
+<section class="section light" id="faq">
+  <div class="light-blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <div class="section-head center r">
+      <span class="eyebrow"><span class="dot" style="background:var(--c-violet);box-shadow:0 0 12px var(--c-violet)"></span>Questions</span>
+      <h2 class="h2">Fair questions,<br>straight answers.</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq r" open>
+        <summary>What does it cost, and what do I need to run it?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">Nothing, and not much. The suite is MIT licensed with no paid tier. You need Node 18+ and Python 3.9+ on Linux or macOS, plus an AI agent that reads SKILL.md files.</div>
+      </details>
+      <details class="faq r">
+        <summary>Is my Edvibe password safe?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">You type it yourself, once, in your own terminal, and it is never stored. The session token stays in a file on your machine, and the CLI talks to Edvibe from your computer — not through anyone's server.</div>
+      </details>
+      <details class="faq r">
+        <summary>Will it break when Edvibe changes?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">It can. The CLI talks to an undocumented API surface, so an Edvibe update may break it. The skill documents the recovery steps, and the code is open, so fixes land in the repo.</div>
+      </details>
+      <details class="faq r">
+        <summary>Do I need prompt engineering skills?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">No. You describe the lesson in plain words, like “Present Perfect for a 7th grader,” and the skill carries the structure. Read the output the way you would read any draft.</div>
+      </details>
+      <details class="faq r">
+        <summary>Which agent do I need?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">Any agent that reads agentskills.io SKILL.md files: Hermes Agent, Claude Code, Codex CLI, Cursor, and 70+ more. The default install targets every detected agent; add a flag to pick one.</div>
+      </details>
+      <details class="faq r">
+        <summary>Can I use it with students at any level?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="a">From A1 through C1. Exercises are written for one student from their level, interests and weak spots, and the level never goes up without you asking.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CTA ============================ -->
+<section class="cta dark" id="cta">
+  <div class="bg-image" style="background-image:url('assets/raw/tiles.jpg');opacity:.34"></div>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="wrap cta-inner r">
+    <span class="eyebrow"><span class="dot"></span>Free · Open source · MIT</span>
+    <h2 class="h2">Install the suite.<br><span class="grad-text">Build tonight's lesson.</span></h2>
+    <p class="sub" style="margin:0 auto">Two commands and one login. MIT licensed, and it runs on your machine.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary btn-lg" href="#install">Install the suite</a>
+      <a class="btn btn-ghost btn-lg" href="https://github.com/itsfedor/esl-automation-suite" target="_blank" rel="noopener">
+        <svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        Open the repo on GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="spectrum-line" aria-hidden="true"></div>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer dark">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="f-logo">
+          <svg viewBox="0 0 34 32" fill="none" aria-hidden="true">
+            <path d="M0 19h12" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M16.5 6.5 28 27H5Z" fill="url(#lgMark)" stroke="rgba(255,255,255,.92)" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M22.3 16.8 33 12.6" stroke="#6E5BFF" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+            <path d="M24.1 19.6 33 17.4" stroke="#2BD9C7" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+            <path d="M25.9 22.4 32.7 22.2" stroke="#FF6B8A" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+          </svg>
+          Prism
+        </div>
+        <p class="f-about">AI teaching pipelines for language teachers. Raw material in, ready lessons out. MIT licensed: use it, fork it, teach with it. No paid tier, no tracking.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#makes">What it makes</a>
+        <a href="#demo">Demo</a>
+        <a href="#pipelines">Pipelines</a>
+        <a href="#how">How it works</a>
+        <a href="#install">Install</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="https://github.com/itsfedor/esl-automation-suite/tree/main/docs" target="_blank" rel="noopener">Docs</a>
+        <a href="https://github.com/itsfedor/esl-automation-suite/tree/main/examples" target="_blank" rel="noopener">Examples</a>
+        <a href="https://github.com/itsfedor/esl-automation-suite/blob/main/INSTALL.md" target="_blank" rel="noopener">INSTALL.md</a>
+        <a href="https://agentskills.io" target="_blank" rel="noopener">agentskills.io</a>
+      </div>
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="https://github.com/itsfedor/esl-automation-suite" target="_blank" rel="noopener">GitHub repository</a>
+        <a href="https://github.com/itsfedor/esl-automation-suite/blob/main/LICENSE" target="_blank" rel="noopener">MIT license</a>
+        <a href="https://github.com/itsfedor" target="_blank" rel="noopener">Built by @itsfedor</a>
+      </div>
+    </div>
+    <div class="footer-base">
+      <span>© 2026 Prism · MIT licensed · Made for teachers who teach all day.</span>
+      <span>An independent open-source project. Not affiliated with Edvibe, test-english.com, Notion, or Deepgram — it works with those services and does not speak for them.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canHover = window.matchMedia('(hover: hover)').matches;
+  var $ = function(s, el){ return (el||document).querySelector(s); };
+  var $$ = function(s, el){ return Array.prototype.slice.call((el||document).querySelectorAll(s)); };
+
+  /* ---------- nav ---------- */
+  var navOuter = $('#navOuter');
+  window.addEventListener('scroll', function(){
+    navOuter.classList.toggle('scrolled', window.scrollY > 24);
+  }, { passive: true });
+
+  var burger = $('#burger'), menu = $('#mobileMenu');
+  if (burger && menu){
+    burger.addEventListener('click', function(){
+      var open = menu.classList.toggle('open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    $$('a', menu).forEach(function(a){
+      a.addEventListener('click', function(){
+        menu.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      });
+    });
+  }
+
+  /* ---------- prism lights up ---------- */
+  var prism = $('#prismSvg');
+  if (prism){
+    if (reduced) prism.classList.add('is-lit');
+    else setTimeout(function(){ prism.classList.add('is-lit'); }, 220);
+  }
+
+  /* ---------- reveal ---------- */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, { threshold: .12, rootMargin: '0px 0px -7% 0px' });
+  $$('.r').forEach(function(el){ io.observe(el); });
+
+  /* ---------- specular highlight ---------- */
+  if (canHover && !reduced){
+    $$('[data-spec]').forEach(function(card){
+      var px = 0, py = 0, raf = null;
+      card.addEventListener('pointermove', function(e){
+        var r = card.getBoundingClientRect();
+        px = e.clientX - r.left; py = e.clientY - r.top;
+        if (!raf) raf = requestAnimationFrame(function(){
+          raf = null;
+          card.style.setProperty('--mx', px + 'px');
+          card.style.setProperty('--my', py + 'px');
+        });
+      }, { passive: true });
+    });
+  }
+
+  /* ---------- hero deck parallax ---------- */
+  var hero = $('#top'), deck = $('#deck');
+  if (hero && deck && canHover && !reduced){
+    var cards = $$('.deck-card', deck), tx = 0, ty = 0, pRaf = null;
+    hero.addEventListener('pointermove', function(e){
+      var r = hero.getBoundingClientRect();
+      tx = (e.clientX - r.left) / r.width - .5;
+      ty = (e.clientY - r.top) / r.height - .5;
+      if (!pRaf) pRaf = requestAnimationFrame(function(){
+        pRaf = null;
+        cards.forEach(function(c){
+          var d = parseFloat(c.dataset.depth || 0);
+          c.style.transform = 'translate3d(' + (-tx*d).toFixed(1) + 'px,' + (-ty*d).toFixed(1) + 'px,0)';
+        });
+      });
+    }, { passive: true });
+  }
+
+  /* ---------- gallery ---------- */
+  var gal = $('#gallery');
+  if (gal){
+    var gPrev = $('#gPrev'), gNext = $('#gNext');
+    var step = function(){ var s = $('.shot', gal); return s ? s.getBoundingClientRect().width + 26 : 640; };
+    var updateG = function(){
+      if (!gPrev || !gNext) return;
+      gPrev.disabled = gal.scrollLeft < 8;
+      gNext.disabled = gal.scrollLeft > gal.scrollWidth - gal.clientWidth - 8;
+    };
+    gal.addEventListener('scroll', function(){ requestAnimationFrame(updateG); }, { passive: true });
+    window.addEventListener('resize', updateG);
+    if (gPrev) gPrev.addEventListener('click', function(){ gal.scrollBy({ left: -step(), behavior: reduced ? 'auto' : 'smooth' }); });
+    if (gNext) gNext.addEventListener('click', function(){ gal.scrollBy({ left: step(), behavior: reduced ? 'auto' : 'smooth' }); });
+
+    var down = false, startX = 0, startSL = 0, moved = false;
+    gal.addEventListener('pointerdown', function(e){
+      if (e.pointerType !== 'mouse') return;   /* touch keeps native inertia */
+      down = true; moved = false; startX = e.clientX; startSL = gal.scrollLeft;
+      gal.classList.add('dragging');
+      try { gal.setPointerCapture(e.pointerId); } catch(err){}
+    });
+    gal.addEventListener('pointermove', function(e){
+      if (!down) return;
+      var dx = e.clientX - startX;
+      if (Math.abs(dx) > 5) moved = true;
+      gal.scrollLeft = startSL - dx;
+    }, { passive: true });
+    ['pointerup','pointercancel'].forEach(function(ev){
+      gal.addEventListener(ev, function(e){
+        if (!down) return;
+        down = false; gal.classList.remove('dragging'); updateG();
+        try { gal.releasePointerCapture(e.pointerId); } catch(err){}
+      });
+    });
+    gal.addEventListener('click', function(e){
+      if (moved){ e.preventDefault(); e.stopPropagation(); moved = false; }
+    }, true);
+    updateG();
+  }
+
+  /* ---------- demo ---------- */
+  var DEMO = {
+    video: {
+      title: 'lesson-guide.pipeline', tc: 'var(--c-indigo)', badge: 'Lesson guide',
+      artTitle: 'Teacher\u2019s guide \u2014 B2',
+      user: 'Make a B2 lesson guide from this 3-minute video: \u201CThe Dangers of Copying Successful People.\u201D',
+      steps: ['Fetching the transcript', 'Tagging vocabulary above B2', 'Writing 4 exercises + 2 bonus', 'Checking every quote against the source'],
+      done: '\u003Cb\u003EGuide ready.\u003C/b\u003E The student copy ships without teacher notes; the keys stay in yours.',
+      art: { type: 'img', src: 'assets/shots/lesson-guide-B2.jpg' },
+      foot: 'Formatted for Edvibe, print-ready for class.'
+    },
+    voice: {
+      title: 'student-voice-log.pipeline', tc: 'var(--c-teal)', badge: 'Tracker entry',
+      artTitle: 'Students tracker entry',
+      user: 'Voice note \u00b7 \u201CMaria handled the chart description today. Still mixes up rise and raise. Strong vocabulary. Wants IELTS Task 1 practice next week.\u201D',
+      steps: ['Transcribing the voice note', 'Matching \u201CMaria\u201D in the tracker', 'Splitting into: student, date, topic, next steps', 'Filing under Maria K.'],
+      done: '\u003Cb\u003EEntry added.\u003C/b\u003E Filed five minutes after the lesson, instead of never.',
+      art: { type: 'note', ava: 'MK', name: 'Maria K.', sub: 'Students tracker \u00b7 Notion',
+        rows: [['Wins','Handled the chart description task start to finish.'],['Watch','Mixes up rise and raise.'],['Next','IELTS Task 1 practice next week.'],['Filed','Voice note \u00b7 dated today \u00b7 B1+']],
+        chips: ['entry created','tracker updated','no manual typing'] },
+      foot: 'Queryable by student and date when you plan the next class.'
+    },
+    tv: {
+      title: 'tv-episode-homework.pipeline', tc: 'var(--c-coral)', badge: 'Homework set',
+      artTitle: 'Homework \u2014 one episode',
+      user: 'Homework from episode 3 of Ted Lasso, for Thursday\u2019s class.',
+      steps: ['Sourcing the episode script', 'Capping language at B1', 'Building recap + 4+2 from real lines', 'Budgeting the work at under 15 minutes'],
+      done: '\u003Cb\u003EHomework set.\u003C/b\u003E Or ask for the series version: one Edvibe unit per episode.',
+      art: { type: 'note', ava: 'TL', name: 'Ted Lasso \u00b7 Episode 3', sub: 'Homework \u00b7 Edvibe \u00b7 B1',
+        rows: [['Recap','Three lines the students will recognize instantly.'],['Exercises','4 core + 2 bonus, built from the script.'],['Time','Adds up to 15 minutes of student work.'],['Series','Or one Edvibe unit per episode, in order.']],
+        chips: ['real lines','audio included','ready in Edvibe'] },
+      foot: 'One episode becomes one homework \u2014 or one unit of a course.'
+    },
+    te: {
+      title: 'test-english-adapt.pipeline', tc: 'var(--c-amber)', badge: 'Adapted exercise',
+      artTitle: 'Writing exercise \u2014 C1',
+      user: 'Adapt this for Alex (C1) \u2014 test-english.com, \u201CDescribing visual data\u201D writing task.',
+      steps: ['Opening the source exercise', 'Keeping the exercise type the same', 'Re-writing for one student at C1', 'Generating charts for the task'],
+      done: '\u003Cb\u003EExercise ready.\u003C/b\u003E The level never goes up; anything unverified gets flagged.',
+      art: { type: 'img', src: 'assets/shots/c1-exercise.jpg' },
+      foot: 'Delivered as chat text, a single-file HTML, or a Pages link.'
+    }
+  };
+
+  var chat = $('#chat'), deskTitle = $('#deskTitle'), deskStatus = $('#deskStatus');
+  var artTitle = $('#artTitle'), artBadge = $('#artBadge'), artImg = $('#artImg'),
+      artImgEl = $('#artImgEl'), artNote = $('#artNote'), artFoot = $('#artFoot'),
+      artifactEl = document.querySelector('.artifact');
+  var demoToken = 0;
+
+  function msg(kind, text){
+    var d = document.createElement('div');
+    d.className = 'msg ' + kind;
+    if (kind === 'agent') d.innerHTML = text; else d.textContent = text;
+    return d;
+  }
+  function stepsEl(list){
+    var box = document.createElement('div');
+    box.className = 'steps';
+    list.forEach(function(s){
+      var d = document.createElement('div');
+      d.className = 'step';
+      d.innerHTML = '<span class="tick"><span class="spin"></span></span><span>' + s + '</span>';
+      box.appendChild(d);
+    });
+    return box;
+  }
+  function checkIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  }
+  function buildNote(a){
+    var rows = a.rows.map(function(r){
+      return '<div class="note-row"><span class="k">' + r[0] + '</span><span class="v">' + r[1] + '</span></div>';
+    }).join('');
+    var chips = a.chips.map(function(c){ return '<span>' + c + '</span>'; }).join('');
+    return '<div class="note-head"><div class="note-ava">' + a.ava + '</div><div><b>' + a.name + '</b><div class="note-sub">' + a.sub + '</div></div></div>' +
+           '<div class="note-rows">' + rows + '</div><div class="note-chips">' + chips + '</div>';
+  }
+
+  function play(key){
+    var item = DEMO[key]; if (!item || !chat) return;
+    var token = ++demoToken;
+
+    $$('.tab').forEach(function(t){
+      t.setAttribute('aria-selected', t.dataset.demo === key ? 'true' : 'false');
+    });
+    deskTitle.textContent = item.title;
+    artTitle.textContent = item.artTitle;
+    artBadge.textContent = item.badge;
+    artBadge.style.setProperty('--tc', item.tc);
+    if (artifactEl) artifactEl.style.setProperty('--tc', item.tc);
+    artFoot.textContent = item.foot;
+    chat.innerHTML = '';
+    $$('.step', chat).forEach(function(s){ s.classList.add('done'); });
+
+    artImg.classList.remove('loaded');
+    if (item.art.type === 'img'){
+      artNote.classList.remove('on');
+      artImg.style.display = '';
+      artImgEl.src = item.art.src;
+      if (artImgEl.complete) artImg.classList.add('loaded');
+      else artImgEl.onload = function(){ artImg.classList.add('loaded'); };
+    } else {
+      artImg.style.display = 'none';
+      artNote.style.setProperty('--pc', item.tc);
+      artNote.innerHTML = buildNote(item.art);
+      artNote.classList.add('on');
+    }
+
+    function finishArtifact(){
+      if (item.art.type !== 'img') return;
+      if (artImgEl.complete) artImg.classList.add('loaded');
+      else artImgEl.onload = function(){ artImg.classList.add('loaded'); };
+    }
+
+    if (reduced){
+      deskStatus.textContent = 'agent idle';
+      var u0 = msg('user', item.user); u0.classList.add('show'); chat.appendChild(u0);
+      var s0 = stepsEl(item.steps); s0.classList.add('show');
+      $$('.step', s0).forEach(function(st){
+        st.classList.add('done');
+        $('.tick', st).innerHTML = checkIcon();
+      });
+      chat.appendChild(s0);
+      var d0 = msg('agent', item.done); d0.classList.add('show'); chat.appendChild(d0);
+      finishArtifact();
+      return;
+    }
+
+    deskStatus.textContent = 'agent running\u2026';
+    var u = msg('user', item.user);
+    chat.appendChild(u);
+    setTimeout(function(){ if (token === demoToken) u.classList.add('show'); }, 140);
+
+    var st = stepsEl(item.steps);
+    chat.appendChild(st);
+    setTimeout(function(){ if (token === demoToken) st.classList.add('show'); }, 420);
+
+    var stepEls = $$('.step', st);
+    stepEls.forEach(function(s, i){
+      setTimeout(function(){
+        if (token !== demoToken) return;
+        s.classList.add('done');
+        $('.tick', s).innerHTML = checkIcon();
+      }, 950 + i * 720);
+    });
+
+    var endAt = 950 + stepEls.length * 720 + 320;
+    setTimeout(function(){
+      if (token !== demoToken) return;
+      deskStatus.textContent = 'agent idle';
+      var d = msg('agent', item.done);
+      chat.appendChild(d);
+      requestAnimationFrame(function(){ d.classList.add('show'); });
+      finishArtifact();
+    }, endAt);
+  }
+
+  $$('.tab').forEach(function(t){
+    t.addEventListener('click', function(){ play(t.dataset.demo); });
+    t.addEventListener('keydown', function(e){
+      var tabs = $$('.tab'), i = tabs.indexOf(t), next = null;
+      if (e.key === 'ArrowRight') next = tabs[(i+1) % tabs.length];
+      if (e.key === 'ArrowLeft') next = tabs[(i-1+tabs.length) % tabs.length];
+      if (next){ e.preventDefault(); next.focus(); play(next.dataset.demo); }
+    });
+  });
+
+  var demoDone = false;
+  var demoIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting && !demoDone){ demoDone = true; play('video'); demoIO.disconnect(); }
+    });
+  }, { threshold: .3 });
+  var demoTabs = $('#demoTabs');
+  if (demoTabs) demoIO.observe(demoTabs);
+
+  if (artImgEl && artImgEl.complete) artImg.classList.add('loaded');
+
+  /* ---------- count ups ---------- */
+  function countUp(el){
+    var target = parseFloat(el.dataset.count || '0');
+    var suffix = el.dataset.suffix || '';
+    if (reduced){ el.textContent = target + suffix; return; }
+    var t0 = performance.now(), dur = 1400;
+    function step(t){
+      var k = Math.min(1, (t - t0) / dur);
+      var e = 1 - Math.pow(1 - k, 3);
+      el.textContent = Math.round(target * e) + suffix;
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var statIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting){ countUp(en.target); statIO.unobserve(en.target); }
+    });
+  }, { threshold: .6 });
+  $$('[data-count]').forEach(function(el){
+    el.textContent = '0' + (el.dataset.suffix || '');
+    statIO.observe(el);
+  });
+
+  /* ---------- install typing ---------- */
+  var CMD = 'npx skills add itsfedor/esl-automation-suite -g -y';
+  var typeEl = $('#typeCmd');
+  if (typeEl){
+    if (reduced){ typeEl.textContent = CMD; }
+    else {
+      typeEl.textContent = '';
+      var typed = false;
+      var typeIO = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if (en.isIntersecting && !typed){
+            typed = true; typeIO.disconnect();
+            var i = 0;
+            var t = setInterval(function(){
+              i++;
+              typeEl.textContent = CMD.slice(0, i);
+              if (i >= CMD.length) clearInterval(t);
+            }, 24);
+          }
+        });
+      }, { threshold: .5 });
+      typeIO.observe(typeEl.closest('.term') || typeEl);
+    }
+  }
+
+  /* ---------- copy buttons ---------- */
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly','');
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch(e){ ok = false; }
+    ta.remove();
+    return ok;
+  }
+  function copyText(text){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text).then(function(){ return true; }, function(){ return fallbackCopy(text); });
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+  var checkSvg = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  var copySvg = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+  $$('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var label = $('.lbl', btn);
+      copyText(btn.dataset.copy).then(function(ok){
+        btn.classList.add('ok');
+        if (label){
+          var old = label.textContent;
+          label.textContent = ok ? 'Copied' : 'Select and copy';
+          var ico = $('.ico', btn);
+          if (ico) ico.outerHTML = checkSvg;
+          setTimeout(function(){
+            btn.classList.remove('ok');
+            label.textContent = old;
+            var ico2 = $('.ico', btn);
+            if (ico2) ico2.outerHTML = copySvg;
+          }, 1900);
+        }
+      });
+    });
+  });
+
+  /* ---------- evening toggle ---------- */
+  var eveBefore = $('#eve-before'), eveAfter = $('#eve-after');
+  $$('.eve-btn').forEach(function(b){
+    b.addEventListener('click', function(){
+      var after = b.dataset.eve === 'after';
+      $$('.eve-btn').forEach(function(x){
+        x.classList.toggle('on', x === b);
+        x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+      });
+      if (eveBefore) eveBefore.classList.toggle('on', !after);
+      if (eveAfter) eveAfter.classList.toggle('on', after);
+    });
+  });
+
+  /* ---------- faq: one open at a time ---------- */
+  var faqs = $$('details.faq');
+  faqs.forEach(function(d){
+    d.addEventListener('toggle', function(){
+      if (d.open) faqs.forEach(function(o){ if (o !== d) o.open = false; });
+    });
+  });
+})();
+</script>
+</body>
+</html>
