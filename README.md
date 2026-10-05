@@ -3,6 +3,8 @@
   <img alt="Prism — the landing page for the ESL Automation Suite — by Fedor Molodtsov" src="assets/banner-light.png" width="100%">
 </picture>
 
+<p align="center"><sub><b>Fedor Molodtsov</b> — AI automation engineer · <a href="https://github.com/itsfedor">github.com/itsfedor</a></sub></p>
+
 # Prism — landing page
 
 Marketing landing page for **Prism**, the product name used here for the
