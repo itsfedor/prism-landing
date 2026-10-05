@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.png">
+  <img alt="Prism — the landing page for the ESL Automation Suite — by Fedor Molodtsov" src="assets/banner-light.png" width="100%">
+</picture>
+
 # Prism — landing page
 
 Marketing landing page for **Prism**, the product name used here for the
