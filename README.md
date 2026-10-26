@@ -32,4 +32,8 @@ specular highlights on glass cards, a draggable artifact gallery, an
 interactive pipeline demo, and a before/after prep-timeline toggle. Motion
 respects `prefers-reduced-motion`; the page works offline.
 
-The suite itself: [itsfedor/esl-automation-suite](https://github.com/itsfedor/esl-automation-suite) — MIT licensed.
+The suite itself: [itsfedor/esl-automation-suite](https://github.com/itsfedor/esl-automation-suite) — AGPL-3.0 licensed.
+
+## License
+
+AGPL-3.0. See [LICENSE](LICENSE). If AGPL does not fit your use case, a commercial license is available — [COMMERCIAL.md](COMMERCIAL.md).
