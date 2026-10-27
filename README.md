@@ -33,3 +33,7 @@ interactive pipeline demo, and a before/after prep-timeline toggle. Motion
 respects `prefers-reduced-motion`; the page works offline.
 
 The suite itself: [itsfedor/esl-automation-suite](https://github.com/itsfedor/esl-automation-suite) — MIT licensed.
+
+## License
+
+[MIT](LICENSE)
