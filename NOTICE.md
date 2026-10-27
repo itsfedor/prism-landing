@@ -7,9 +7,9 @@ Licensed under the **GNU Affero General Public License, version 3.0 only**
 
 ## Licensing history
 
-Versions published before 2026-10-26 (up to commit `5ccc3e2eae`) carried **no
-license grant** — all rights reserved. No rights were given to anyone for those
-versions, and they may not be used, copied or deployed.
+Versions published before 2026-10-26 (up to commit `5ccc3e2eae`) were released under the
+MIT License. Anyone who received those versions keeps their MIT rights to them;
+this does not extend to later versions.
 
 From 2026-10-26 onward every version is licensed under AGPL-3.0-only.
 
