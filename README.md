@@ -14,6 +14,8 @@ script into ready teaching material.
 
 **Live:** https://itsfedor.github.io/prism-landing/
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 ## What's here
 
 - `index.html` — the built page. Self-contained: inline CSS/JS, local assets,
