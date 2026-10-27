@@ -1,0 +1,20 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: build is not stale
+        run: |
+          bash build.sh
+          git diff --exit-code index.html
+      - name: license drift
+        run: |
+          test -f LICENSE || { echo "LICENSE missing"; exit 1; }
+          grep -qiE 'Apache License|MIT License' LICENSE || { echo "unexpected LICENSE text"; exit 1; }
+          grep -q 'License:' README.md || { echo "README has no license badge"; exit 1; }
